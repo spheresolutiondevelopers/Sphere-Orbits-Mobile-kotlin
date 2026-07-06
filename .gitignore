@@ -1,0 +1,196 @@
+# ================================================================
+# SPHERE ANDROID — .gitignore
+# ================================================================
+# This file tells Git which files and directories to exclude from
+# version control. Keeping these out keeps the repo clean, fast,
+# and secure.
+# ================================================================
+
+# ─── Gradle Build Outputs ────────────────────────────────────────
+.gradle/
+build/
+buildSrc/build/
+captures/
+*.apk
+*.aab
+*.dex
+*.class
+*.jar
+!gradle-wrapper.jar
+
+# ─── IDE Files ──────────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.vscode/
+.ktlint/
+.spotless/
+.classpath
+.project
+.settings/
+.metadata/
+
+# ─── Android Studio ─────────────────────────────────────────────
+local.properties
+*.hprof
+*.log
+androidTest/
+caches/
+test-output/
+
+# ─── Gradle Wrapper ─────────────────────────────────────────────
+# Keep the wrapper JAR, but ignore everything else
+!gradle/wrapper/gradle-wrapper.jar
+gradle/wrapper/gradle-wrapper.properties
+
+# ─── Build Artifacts ────────────────────────────────────────────
+*.dex
+*.apk
+*.aab
+*.so
+*.dll
+*.dylib
+*.pdb
+*.swp
+*.swo
+*.lock
+
+# ─── Keystore Files ─────────────────────────────────────────────
+*.jks
+*.keystore
+*.p12
+*.pem
+*.crt
+*.key
+debug.keystore
+release.keystore
+
+# ─── Secrets ────────────────────────────────────────────────────
+secrets.properties
+secrets.gradle
+api_keys.properties
+google-services.json
+google-services-dev.json
+GoogleService-Info.plist
+firebase.json
+.credentials/
+*.env
+.env.*
+!env.example
+
+# ─── Generated Code ─────────────────────────────────────────────
+generated/
+build/generated/
+app/build/
+core/*/build/
+feature/*/build/
+/*/build/
+/*/out/
+
+# ─── Test Coverage Reports ─────────────────────────────────────
+coverage/
+test-results/
+junit/
+*.ec
+*.exec
+
+# ─── Logs ──────────────────────────────────────────────────────
+*.log
+logs/
+*.trace
+*.prof
+*.hprof
+
+# ─── OS Files ─────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+*.swp
+*~
+*.tmp
+temp/
+tmp/
+
+# ─── User-Specific Files ──────────────────────────────────────
+*.user
+*.user.*
+*.orig
+*.bak
+*.patch
+*.rej
+*.orig
+*.bak
+*.patch
+
+# ─── Firebase / Crashlytics ────────────────────────────────────
+crashlytics-build.properties
+google-services.json
+firebase-app-distribution.json
+
+# ─── Sentry ────────────────────────────────────────────────────
+.sentryclirc
+sentry.properties
+
+# ─── Android Lint ──────────────────────────────────────────────
+lint-results-*.xml
+lint-results.html
+
+# ─── Performance / Profiling ────────────────────────────────────
+*.trace
+*.cpuprofile
+*.heapsnapshot
+*.hprof
+
+# ─── Local Build Overrides ─────────────────────────────────────
+# If you need to override build settings locally, use these files
+local.gradle
+gradle.properties.local
+
+# ─── Terraform / Infrastructure ──────────────────────────────
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+terraform.tfvars.*
+plan/
+.terraform.lock.hcl
+
+# ─── Kotlin ────────────────────────────────────────────────────
+.metals/
+.bloop/
+.scala-build/
+.kotlin/
+kotlin-js-store/
+kotlin-dokka/
+.classpath
+.project
+.settings/
+
+# ─── Jetpack Compose ──────────────────────────────────────────
+compose-compiler-reports/
+compose_compiler/
+
+# ─── Room Database ────────────────────────────────────────────
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+
+# ─── Build Cache ──────────────────────────────────────────────
+.build-cache/
+build-cache/
+.cache/
+.cxx/
+
+# ─── Test Artifacts ────────────────────────────────────────────
+androidTest/
+unitTest/
+test-coverage/
+test-report/

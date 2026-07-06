@@ -1,0 +1,141 @@
+# ───────────────────────────────────────────────────────────────
+# SPHERE ANDROID — VERSION CATALOG
+# ───────────────────────────────────────────────────────────────
+# All dependencies are centralized here. Update a version once,
+# and it propagates across all modules automatically.
+# ───────────────────────────────────────────────────────────────
+
+[versions]
+# ─── Kotlin & Coroutines ──────────────────────────────────────
+kotlin = "1.9.20"
+kotlinCoroutines = "1.7.3"
+kotlinSerialization = "1.6.3"
+
+# ─── AndroidX ──────────────────────────────────────────────────
+androidxCore = "1.12.0"
+androidxLifecycle = "2.7.0"
+androidxActivity = "1.8.2"
+androidxAppCompat = "1.6.1"
+androidxConstraintLayout = "2.1.4"
+
+# ─── Compose ──────────────────────────────────────────────────
+composeBom = "2024.10.00"
+composeCompiler = "1.5.4"
+
+# ─── Navigation ──────────────────────────────────────────────
+navigationCompose = "2.7.7"
+
+# ─── Dagger Hilt ──────────────────────────────────────────────
+hilt = "2.48"
+hiltNavigationCompose = "1.2.0"
+
+# ─── Networking ────────────────────────────────────────────────
+retrofit = "2.9.0"
+okhttp = "4.12.0"
+moshi = "1.15.0"
+
+# ─── Database ──────────────────────────────────────────────────
+room = "2.6.1"
+
+# ─── DataStore ────────────────────────────────────────────────
+dataStore = "1.0.0"
+
+# ─── WorkManager ──────────────────────────────────────────────
+workManager = "2.9.0"
+
+# ─── Logging ──────────────────────────────────────────────────
+timber = "5.0.1"
+
+# ─── Testing ──────────────────────────────────────────────────
+junit = "4.13.2"
+junitExt = "1.1.5"
+espresso = "3.5.1"
+composeUiTest = "1.6.8"
+mockito = "5.11.0"
+mockitoKotlin = "5.2.1"
+
+[libraries]
+# ─── Kotlin ────────────────────────────────────────────────────
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
+kotlin-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinCoroutines" }
+kotlin-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinCoroutines" }
+kotlin-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
+
+# ─── AndroidX ──────────────────────────────────────────────────
+androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
+androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
+androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidxLifecycle" }
+androidx-lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidxLifecycle" }
+androidx-activity = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivity" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppCompat" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidxConstraintLayout" }
+
+# ─── Compose ──────────────────────────────────────────────────
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+compose-ui = { group = "androidx.compose.ui", name = "ui" }
+compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+compose-material-icons = { group = "androidx.compose.material", name = "material-icons-extended" }
+compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+
+# ─── Navigation ──────────────────────────────────────────────
+navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+
+# ─── Dagger Hilt ──────────────────────────────────────────────
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+
+# ─── Networking ──────────────────────────────────────────────
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
+retrofit-scalars = { group = "com.squareup.retrofit2", name = "converter-scalars", version.ref = "retrofit" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
+moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
+moshi-adapters = { group = "com.squareup.moshi", name = "moshi-adapters", version.ref = "moshi" }
+
+# ─── Database ──────────────────────────────────────────────────
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# ─── DataStore ──────────────────────────────────────────────
+datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "dataStore" }
+datastore-core = { group = "androidx.datastore", name = "datastore-core", version.ref = "dataStore" }
+
+# ─── WorkManager ──────────────────────────────────────────────
+workmanager = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workManager" }
+
+# ─── Logging ──────────────────────────────────────────────────
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+
+# ─── Testing ──────────────────────────────────────────────────
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+junit-ext = { group = "androidx.test.ext", name = "junit", version.ref = "junitExt" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
+
+[plugins]
+# ─── Android ──────────────────────────────────────────────────
+android-application = { id = "com.android.application", version.ref = "androidxCore" }
+android-library = { id = "com.android.library", version.ref = "androidxCore" }
+android-test = { id = "com.android.test", version.ref = "androidxCore" }
+
+# ─── Kotlin ────────────────────────────────────────────────────
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+# ─── Hilt ──────────────────────────────────────────────────────
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+
+# ─── Sphere Convention Plugins ────────────────────────────────
+sphere-application = { id = "sphere.android.application", version = "1.0.0" }
+sphere-feature = { id = "sphere.android.feature", version = "1.0.0" }
+sphere-library = { id = "sphere.android.library", version = "1.0.0" }
