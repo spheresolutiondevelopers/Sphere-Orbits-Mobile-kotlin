@@ -185,4 +185,4 @@ internal class CalendarEventMapper @Inject constructor() {
     fun toEntityListFromDto(dtos: List<CalendarEventDto>): List<CalendarEventEntity> {
         return dtos.map { toEntity(it) }
     }
-}g
+}
