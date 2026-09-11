@@ -15,15 +15,18 @@ object MeetingValidator {
             errors.add(ValidationError("title", "Meeting title must be 255 characters or less"))
         }
 
-        if (meeting.description != null && meeting.description.length > 4000) {
+        val description = meeting.description
+        if (description != null && description.length > 4000) {
             errors.add(ValidationError("description", "Description must be 4000 characters or less"))
         }
 
-        if (meeting.agenda != null && meeting.agenda.length > 4000) {
+        val agenda = meeting.agenda
+        if (agenda != null && agenda.length > 4000) {
             errors.add(ValidationError("agenda", "Agenda must be 4000 characters or less"))
         }
 
-        if (meeting.minutes != null && meeting.minutes.length > 4000) {
+        val minutes = meeting.minutes
+        if (minutes != null && minutes.length > 4000) {
             errors.add(ValidationError("minutes", "Minutes must be 4000 characters or less"))
         }
 
@@ -31,8 +34,9 @@ object MeetingValidator {
             errors.add(ValidationError("status", "Invalid status"))
         }
 
-        if (meeting.meetingPlatform != null) {
-            if (meeting.meetingPlatform !in listOf("zoom", "teams", "google_meet", "custom")) {
+        val meetingPlatform = meeting.meetingPlatform
+        if (meetingPlatform != null) {
+            if (meetingPlatform !in listOf("zoom", "teams", "google_meet", "custom")) {
                 errors.add(ValidationError("meetingPlatform", "Invalid meeting platform"))
             }
         }
@@ -54,15 +58,17 @@ object MeetingValidator {
         }
 
         // Validate recurrence pattern if recurring
-        if (meeting.isRecurring && meeting.recurrencePattern != null) {
-            if (!meeting.recurrencePattern.startsWith("FREQ=")) {
+        val recurrencePattern = meeting.recurrencePattern
+        if (meeting.isRecurring && recurrencePattern != null) {
+            if (!recurrencePattern.startsWith("FREQ=")) {
                 errors.add(ValidationError("recurrencePattern", "Invalid RRULE format"))
             }
         }
 
         // Validate meeting link if platform is custom
-        if (meeting.meetingPlatform == "custom" && meeting.meetingLink != null) {
-            if (!meeting.meetingLink.startsWith("http")) {
+        val meetingLink = meeting.meetingLink
+        if (meetingPlatform == "custom" && meetingLink != null) {
+            if (!meetingLink.startsWith("http")) {
                 errors.add(ValidationError("meetingLink", "Meeting link must be a valid URL"))
             }
         }

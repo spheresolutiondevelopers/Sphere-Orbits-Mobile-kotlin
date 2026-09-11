@@ -13,17 +13,18 @@ package com.orbits.core.theme
 import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.enumPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
  * DataStore key for theme preference.
  */
-private val THEME_MODE_KEY = enumPreferencesKey<ThemeMode>("theme_mode")
+private val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
 
 /**
  * Extension property for DataStore.
@@ -45,7 +46,12 @@ class ThemePreference @Inject constructor(
      */
     val themeModeFlow: Flow<ThemeMode> = context.dataStore.data
         .map { preferences ->
-            preferences[THEME_MODE_KEY] ?: ThemeMode.SYSTEM
+            val name = preferences[THEME_MODE_KEY] ?: ThemeMode.SYSTEM.name
+            try {
+                ThemeMode.valueOf(name)
+            } catch (e: Exception) {
+                ThemeMode.SYSTEM
+            }
         }
 
     /**
@@ -53,7 +59,7 @@ class ThemePreference @Inject constructor(
      */
     suspend fun setThemeMode(mode: ThemeMode) {
         context.dataStore.edit { preferences ->
-            preferences[THEME_MODE_KEY] = mode
+            preferences[THEME_MODE_KEY] = mode.name
         }
     }
 
@@ -62,10 +68,6 @@ class ThemePreference @Inject constructor(
      * Should only be used in non-UI contexts (e.g., WorkManager).
      */
     suspend fun getThemeModeSync(): ThemeMode {
-        return context.dataStore.data
-            .map { preferences ->
-                preferences[THEME_MODE_KEY] ?: ThemeMode.SYSTEM
-            }
-            .collect { return it }
+        return themeModeFlow.first()
     }
 }

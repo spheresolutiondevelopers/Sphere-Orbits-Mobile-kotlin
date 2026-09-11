@@ -1,6 +1,6 @@
 package com.orbits.data.events.sync
 
-import com.orbits.data.events.local.EventEntity
+import com.orbits.data.events.EventEntity
 import javax.inject.Inject
 
 internal class EventSyncConflictResolver @Inject constructor() {

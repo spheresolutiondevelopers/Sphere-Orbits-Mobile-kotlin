@@ -45,6 +45,9 @@ interface UserDao {
     @Query("SELECT * FROM auth WHERE is_active = 1")
     suspend fun getActiveUsers(): List<AuthEntity>
 
+    @Query("SELECT * FROM auth WHERE is_active = 1")
+    fun getActiveUsersFlow(): Flow<List<AuthEntity>>
+
     @Query("SELECT EXISTS(SELECT 1 FROM auth WHERE id = :userId AND is_active = 1)")
     suspend fun isUserActive(userId: String): Boolean
 

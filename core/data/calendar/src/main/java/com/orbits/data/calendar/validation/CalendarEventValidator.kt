@@ -15,11 +15,13 @@ object CalendarEventValidator {
             errors.add(ValidationError("title", "Event title must be 255 characters or less"))
         }
 
-        if (event.description != null && event.description.length > 4000) {
+        val description = event.description
+        if (description != null && description.length > 4000) {
             errors.add(ValidationError("description", "Description must be 4000 characters or less"))
         }
 
-        if (event.location != null && event.location.length > 500) {
+        val location = event.location
+        if (location != null && location.length > 500) {
             errors.add(ValidationError("location", "Location must be 500 characters or less"))
         }
 
@@ -43,16 +45,18 @@ object CalendarEventValidator {
         }
 
         // Validate recurrence pattern if recurring
-        if (event.isRecurring && event.recurrencePattern != null) {
+        val recurrencePattern = event.recurrencePattern
+        if (event.isRecurring && recurrencePattern != null) {
             // Basic RRULE validation
-            if (!event.recurrencePattern.startsWith("FREQ=")) {
+            if (!recurrencePattern.startsWith("FREQ=")) {
                 errors.add(ValidationError("recurrencePattern", "Invalid RRULE format"))
             }
         }
 
         // Validate meeting link if virtual
-        if (event.isVirtual && event.meetingLink != null) {
-            if (!event.meetingLink.startsWith("http")) {
+        val meetingLink = event.meetingLink
+        if (event.isVirtual && meetingLink != null) {
+            if (!meetingLink.startsWith("http")) {
                 errors.add(ValidationError("meetingLink", "Meeting link must be a valid URL"))
             }
         }

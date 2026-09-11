@@ -8,15 +8,12 @@ android {
 
 dependencies {
     // Kotlin only — NO Android dependencies
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.kotlin.coroutines)
+    implementation(libs.kt.stdlib)
+    implementation(libs.kt.coroutines)
 
     // Internal modules
     implementation(project(":core:common"))
 
     // Testing
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlin.coroutines.test)
-    testImplementation(libs.mockito.core)
-    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.bundles.test)
 }

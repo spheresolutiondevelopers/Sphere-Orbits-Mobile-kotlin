@@ -22,7 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import dagger.hilt.android.AndroidEntryPoint
 import com.orbits.app.navigation.AppNavGraph
-import com.orbits.app.ui.theme.SphereTheme
+import com.orbits.core.theme.SphereTheme
+import com.orbits.app.SphereApp
 
 /**
  * Main Activity — single activity hosting the entire app.
@@ -41,14 +42,7 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            SphereTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    AppNavGraph()
-                }
-            }
+            SphereApp()
         }
     }
 }

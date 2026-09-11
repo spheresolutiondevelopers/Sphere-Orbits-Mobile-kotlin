@@ -104,25 +104,25 @@ internal class ReportGenerator @Inject constructor() {
 
             // Title
             document.add(Paragraph("Sphere Schedule - Productivity Report")
-                .setFontSize(18)
+                .setFontSize(18f)
                 .setBold())
 
             // Date range
             document.add(Paragraph("Report Period: $startDate to $endDate")
-                .setFontSize(12))
+                .setFontSize(12f))
 
             document.add(Paragraph("Generated: ${LocalDateTime.now().format(DATE_FORMATTER)}")
-                .setFontSize(12))
+                .setFontSize(12f))
 
             document.add(Paragraph("\n"))
 
             // Stats table
             val stats = data["stats"] as? Map<*, *>
             if (stats != null) {
-                document.add(Paragraph("Key Metrics").setBold().setFontSize(14))
+                document.add(Paragraph("Key Metrics").setBold().setFontSize(14f))
 
-                val table = Table(UnitValue.createPercentArray(arrayOf(50f, 50f)))
-                table.setWidth(UnitValue.createPercentValue(100))
+                val table = Table(UnitValue.createPercentArray(floatArrayOf(50f, 50f)))
+                table.useAllAvailableWidth()
 
                 stats.forEach { (key, value) ->
                     table.addCell(Cell().add(Paragraph(key.toString())))
@@ -153,7 +153,7 @@ internal class ReportGenerator @Inject constructor() {
                 generatedAt = LocalDateTime.now().format(DATE_FORMATTER),
                 startDate = startDate,
                 endDate = endDate,
-                data = data
+                data = data.mapValues { it.value.toString() }
             )
             json.encodeToString(ReportData.serializer(), reportData)
         } catch (e: Exception) {
@@ -167,6 +167,6 @@ internal class ReportGenerator @Inject constructor() {
         val generatedAt: String,
         val startDate: String,
         val endDate: String,
-        val data: Map<String, Any>
+        val data: Map<String, String>
     )
 }

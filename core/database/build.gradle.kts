@@ -10,51 +10,44 @@
 
 plugins {
     id("sphere.android.library")
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
     namespace = "com.orbits.core.database"
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 dependencies {
     // Kotlin
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.kotlin.coroutines)
+    implementation(libs.kt.stdlib)
+    implementation(libs.kt.coroutines)
 
     // AndroidX
     implementation(libs.androidx.core)
     implementation(libs.androidx.lifecycle.runtime)
 
+    // Moshi
+    implementation(libs.moshi)
+    implementation(libs.moshi.kotlin)
+
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
 
-    // Hilt
+    // Hilt (already handled by convention plugin, but ksp dependency is here)
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     // Internal modules
     implementation(project(":core:common"))
     implementation(project(":core:model"))
 
-    // All data modules (for Entity references in Database)
-    implementation(project(":core:data:auth"))
-    implementation(project(":core:data:tasks"))
-    implementation(project(":core:data:calendar"))
-    implementation(project(":core:data:events"))
-    implementation(project(":core:data:meetings"))
-    implementation(project(":core:data:appointments"))
-    implementation(project(":core:data:chat"))
-    implementation(project(":core:data:notes"))
-    implementation(project(":core:data:analytics"))
-    implementation(project(":core:data:settings"))
-
     // Testing
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlin.coroutines.test)
-    testImplementation(libs.mockito.core)
-    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.bundles.test)
     testImplementation(libs.room.runtime) // for in-memory testing
 }

@@ -14,6 +14,7 @@ data class AuthUser(
     val phoneNumber: String? = null,
     val avatarUrl: String? = null,
     val accountType: String = "free", // free, premium, enterprise, admin
+    val isLocal: Boolean = false,
     val isActive: Boolean = true,
     val createdAt: String,
     val updatedAt: String,

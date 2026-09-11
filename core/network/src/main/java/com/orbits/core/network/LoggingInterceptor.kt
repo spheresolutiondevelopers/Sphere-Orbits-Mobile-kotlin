@@ -11,6 +11,7 @@
 package com.orbits.core.network
 
 import com.orbits.core.common.Logger
+import com.orbits.core.network.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException

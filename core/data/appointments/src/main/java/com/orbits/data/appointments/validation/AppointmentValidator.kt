@@ -15,7 +15,8 @@ object AppointmentValidator {
             errors.add(ValidationError("title", "Appointment title must be 255 characters or less"))
         }
 
-        if (appointment.description != null && appointment.description.length > 4000) {
+        val description = appointment.description
+        if (description != null && description.length > 4000) {
             errors.add(ValidationError("description", "Description must be 4000 characters or less"))
         }
 
@@ -31,11 +32,13 @@ object AppointmentValidator {
             errors.add(ValidationError("reminderMinutesBefore", "Reminder minutes must be 0-1440"))
         }
 
-        if (appointment.location != null && appointment.location.length > 500) {
+        val location = appointment.location
+        if (location != null && location.length > 500) {
             errors.add(ValidationError("location", "Location must be 500 characters or less"))
         }
 
-        if (appointment.notes != null && appointment.notes.length > 4000) {
+        val notes = appointment.notes
+        if (notes != null && notes.length > 4000) {
             errors.add(ValidationError("notes", "Notes must be 4000 characters or less"))
         }
 
@@ -59,22 +62,25 @@ object AppointmentValidator {
         }
 
         // Validate recurrence pattern if recurring
-        if (appointment.isRecurring && appointment.recurrencePattern != null) {
-            if (!appointment.recurrencePattern.startsWith("FREQ=")) {
+        val recurrencePattern = appointment.recurrencePattern
+        if (appointment.isRecurring && recurrencePattern != null) {
+            if (!recurrencePattern.startsWith("FREQ=")) {
                 errors.add(ValidationError("recurrencePattern", "Invalid RRULE format"))
             }
         }
 
         // Validate meeting link if virtual
-        if (appointment.isVirtual && appointment.meetingLink != null) {
-            if (!appointment.meetingLink.startsWith("http")) {
+        val meetingLink = appointment.meetingLink
+        if (appointment.isVirtual && meetingLink != null) {
+            if (!meetingLink.startsWith("http")) {
                 errors.add(ValidationError("meetingLink", "Meeting link must be a valid URL"))
             }
         }
 
         // Validate calendar color
-        if (appointment.calendarColor != null) {
-            if (!appointment.calendarColor.matches(Regex("^#[0-9A-Fa-f]{6}$"))) {
+        val calendarColor = appointment.calendarColor
+        if (calendarColor != null) {
+            if (!calendarColor.matches(Regex("^#[0-9A-Fa-f]{6}$"))) {
                 errors.add(ValidationError("calendarColor", "Invalid color format. Must be #RRGGBB"))
             }
         }

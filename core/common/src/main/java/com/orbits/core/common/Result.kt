@@ -71,3 +71,19 @@ fun <T> Result<T>.errorOrNull(): Throwable? = when (this) {
     is Result.Error -> exception
     else -> null
 }
+
+/**
+ * Execute action if Success.
+ */
+suspend inline fun <T> Result<T>.onSuccess(crossinline action: suspend (T) -> Unit): Result<T> {
+    if (this is Result.Success) action(data)
+    return this
+}
+
+/**
+ * Execute action if Error.
+ */
+suspend inline fun <T> Result<T>.onError(crossinline action: suspend (Throwable) -> Unit): Result<T> {
+    if (this is Result.Error) action(exception)
+    return this
+}

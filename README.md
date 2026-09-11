@@ -60,7 +60,7 @@ sphere-android/
 ├── build.gradle.kts                                      # Root build file: applies plugins, defines classpath
 ├── settings.gradle.kts                                   # Declares all modules to include in the build
 ├── gradle/
-│   ├── libs.versions.toml                                # Central version catalog (all dependencies in one place)
+│   ├── deps.versions.toml                                # Central version catalog (all dependencies in one place)
 │   └── wrapper/
 │       ├── gradle-wrapper.jar
 │       └── gradle-wrapper.properties                     # Gradle distribution version
@@ -726,7 +726,7 @@ Feature → Domain → Data/Database/Network/Common
 
 ### Gradle Version Catalog
 
-All dependencies are defined in `gradle/libs.versions.toml`:
+All dependencies are defined in `gradle/deps.versions.toml`:
 
 ```toml
 [versions]

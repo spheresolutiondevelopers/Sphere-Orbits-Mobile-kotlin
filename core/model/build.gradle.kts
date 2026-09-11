@@ -18,9 +18,9 @@ android {
 
 dependencies {
     // Kotlin Serialization
-    implementation(libs.kotlin.serialization)
+    implementation(libs.kt.serialization)
 
     // Testing
     testImplementation(libs.junit)
-    testImplementation(libs.kotlin.coroutines.test)
+    testImplementation(libs.kt.coroutines.test)
 }

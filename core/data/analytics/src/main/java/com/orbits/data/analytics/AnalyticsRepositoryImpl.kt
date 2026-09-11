@@ -12,7 +12,8 @@ import com.orbits.core.database.dao.MeetingDao
 import com.orbits.core.network.api.AnalyticsApi
 import com.orbits.core.network.error.ApiErrorParser
 import com.orbits.data.sync.SyncQueueEntity
-import com.orbits.data.analytics.local.AnalyticsEntity
+import com.orbits.data.analytics.AnalyticsEntity
+import com.orbits.data.analytics.AnalyticsSummaryEntity
 import com.orbits.data.analytics.mappers.AnalyticsMapper
 import com.orbits.domain.analytics.AnalyticsEvent
 import com.orbits.domain.analytics.ProductivityStats
@@ -224,7 +225,7 @@ internal class AnalyticsRepositoryImpl @Inject constructor(
             val token = tokenProvider.getAccessToken()
             if (token != null) {
                 val response = analyticsApi.getCategoryBreakdown(startDate, endDate)
-                return Result.Success(analyticsMapper.toDomainList(response))
+                return Result.Success(analyticsMapper.toCategoryBreakdownDomainList(response))
             }
 
             // Fallback: compute locally
@@ -380,11 +381,11 @@ internal class AnalyticsRepositoryImpl @Inject constructor(
                 return Result.Error(allocation.exception)
             }
 
-            val reportData = mapOf(
-                "stats" to stats.data!!,
-                "trend" to trend.data!!,
-                "breakdown" to breakdown.data!!,
-                "allocation" to allocation.data!!
+            val reportData = mapOf<String, Any>(
+                "stats" to (stats as Result.Success).data,
+                "trend" to (trend as Result.Success).data,
+                "breakdown" to (breakdown as Result.Success).data,
+                "allocation" to (allocation as Result.Success).data
             )
 
             val report = reportGenerator.generateReport(
@@ -479,9 +480,10 @@ internal class AnalyticsRepositoryImpl @Inject constructor(
         val tasks = taskDao.getTasksInDateRange(getUserId(), startDate, endDate).first()
         val completedTasks = tasks.filter { it.status == "completed" }
         val overdueTasks = tasks.filter { 
+            val dueDate = it.dueDate
             it.status != "completed" && 
-            it.dueDate != null && 
-            it.dueDate < startDate 
+            dueDate != null && 
+            dueDate < startDate 
         }
 
         // Get appointments
@@ -501,7 +503,8 @@ internal class AnalyticsRepositoryImpl @Inject constructor(
         val avgCompletionTime = completedTasks
             .mapNotNull { 
                 val created = Instant.parse(it.createdAt)
-                val completed = it.completedAt?.let { Instant.parse(it) }
+                val completedAt = it.completedAt
+                val completed = completedAt?.let { Instant.parse(it) }
                 if (completed != null) {
                     (completed.toEpochMilli() - created.toEpochMilli()) / (1000.0 * 60 * 60)
                 } else null
@@ -556,9 +559,10 @@ internal class AnalyticsRepositoryImpl @Inject constructor(
         val labels = dateRange.map { it.format(DateTimeFormatter.ofPattern("MMM dd")) }
         val completed = dateRange.map { date ->
             tasks.count { 
+                val completedAt = it.completedAt
                 it.status == "completed" && 
-                it.completedAt != null && 
-                LocalDate.parse(it.completedAt.substring(0, 10)) == date
+                completedAt != null && 
+                LocalDate.parse(completedAt.substring(0, 10)) == date
             }
         }
         val created = dateRange.map { date ->
@@ -568,9 +572,10 @@ internal class AnalyticsRepositoryImpl @Inject constructor(
         }
         val overdue = dateRange.map { date ->
             tasks.count { 
+                val dueDate = it.dueDate
                 it.status != "completed" && 
-                it.dueDate != null && 
-                LocalDate.parse(it.dueDate.substring(0, 10)) == date
+                dueDate != null && 
+                LocalDate.parse(dueDate.substring(0, 10)) == date
             }
         }
 

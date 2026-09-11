@@ -1,6 +1,6 @@
 package com.orbits.data.calendar.sync
 
-import com.orbits.data.calendar.local.CalendarEventEntity
+import com.orbits.data.calendar.CalendarEventEntity
 import javax.inject.Inject
 
 internal class CalendarSyncConflictResolver @Inject constructor() {

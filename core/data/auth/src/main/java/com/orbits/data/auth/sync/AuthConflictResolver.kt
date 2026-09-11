@@ -1,6 +1,6 @@
 package com.orbits.data.auth.sync
 
-import com.orbits.data.auth.local.AuthEntity
+import com.orbits.data.auth.AuthEntity
 import javax.inject.Inject
 
 internal class AuthConflictResolver @Inject constructor() {

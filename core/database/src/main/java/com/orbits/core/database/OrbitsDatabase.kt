@@ -33,6 +33,17 @@ import com.orbits.data.notes.NoteEntity
 import com.orbits.data.analytics.AnalyticsEntity
 import com.orbits.data.settings.SettingsEntity
 import com.orbits.data.sync.SyncQueueEntity
+import com.orbits.core.database.dao.TaskDao
+import com.orbits.core.database.dao.CalendarEventDao
+import com.orbits.core.database.dao.MeetingDao
+import com.orbits.core.database.dao.AppointmentDao
+import com.orbits.core.database.dao.NoteDao
+import com.orbits.core.database.dao.UserDao
+import com.orbits.core.database.dao.MessageDao
+import com.orbits.core.database.dao.AnalyticsDao
+import com.orbits.core.database.dao.SettingsDao
+import com.orbits.core.database.dao.SyncQueueDao
+import com.orbits.core.database.dao.EventDao
 
 @Database(
     entities = [
@@ -79,7 +90,7 @@ import com.orbits.data.sync.SyncQueueEntity
     version = SchemaVersion.CURRENT_VERSION,
     exportSchema = true
 )
-@TypeConverters(TypeConverters::class)
+@TypeConverters(DatabaseConverters::class)
 abstract class OrbitsDatabase : RoomDatabase() {
 
     // ─── DAOs ─────────────────────────────────────────────────────
@@ -94,6 +105,7 @@ abstract class OrbitsDatabase : RoomDatabase() {
     abstract fun analyticsDao(): AnalyticsDao
     abstract fun settingsDao(): SettingsDao
     abstract fun syncQueueDao(): SyncQueueDao
+    abstract fun eventDao(): EventDao
 
     companion object {
         @Volatile

@@ -1,6 +1,7 @@
 package com.orbits.domain.calendar
 
 import com.orbits.core.common.Result
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 /**

@@ -37,6 +37,7 @@ data class SyncResponse(
 data class ServerChange(
     val entityType: String,
     val operation: String,
+    val entityId: String,
     val entity: String // JSON string
 )
 

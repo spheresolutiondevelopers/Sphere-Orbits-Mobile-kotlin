@@ -1,7 +1,7 @@
 package com.orbits.data.calendar.mappers
 
 import com.orbits.core.common.extensions.nowUtc
-import com.orbits.data.calendar.local.CalendarEventEntity
+import com.orbits.data.calendar.CalendarEventEntity
 import com.orbits.data.calendar.remote.CalendarEventDto
 import com.orbits.data.calendar.remote.CreateCalendarEventRequest
 import com.orbits.data.calendar.remote.UpdateCalendarEventRequest

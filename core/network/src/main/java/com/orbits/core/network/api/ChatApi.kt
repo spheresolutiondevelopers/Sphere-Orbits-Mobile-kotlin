@@ -11,6 +11,7 @@
 package com.orbits.core.network.api
 
 import com.orbits.core.model.PaginatedResponse
+import com.orbits.core.model.UserDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST

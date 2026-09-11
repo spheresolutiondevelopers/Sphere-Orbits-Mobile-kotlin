@@ -38,7 +38,8 @@ object AuthValidator {
             errors.add(ValidationError("password", "Password must be at least 8 characters"))
         }
 
-        if (data.displayName != null && data.displayName.length > 100) {
+        val displayName = data.displayName
+        if (displayName != null && displayName.length > 100) {
             errors.add(ValidationError("displayName", "Display name must be 100 characters or less"))
         }
 

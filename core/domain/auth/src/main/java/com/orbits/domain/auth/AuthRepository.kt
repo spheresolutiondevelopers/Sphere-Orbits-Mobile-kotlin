@@ -40,6 +40,11 @@ interface AuthRepository {
     suspend fun login(credentials: LoginCredentials): Result<AuthUser>
 
     /**
+     * Create a local user profile (offline support).
+     */
+    suspend fun createLocalUser(data: RegistrationData? = null): Result<AuthUser>
+
+    /**
      * Register a new user.
      */
     suspend fun register(data: RegistrationData): Result<AuthUser>

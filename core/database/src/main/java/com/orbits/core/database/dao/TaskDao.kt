@@ -79,6 +79,9 @@ interface TaskDao {
     """)
     fun getUpcomingTasks(userId: String): Flow<List<TaskEntity>>
 
+    @Query("SELECT COUNT(*) FROM tasks WHERE user_id = :userId AND is_deleted = 0")
+    suspend fun getTaskCount(userId: String): Int
+
     @Query("""
         SELECT COUNT(*) FROM tasks 
         WHERE user_id = :userId 

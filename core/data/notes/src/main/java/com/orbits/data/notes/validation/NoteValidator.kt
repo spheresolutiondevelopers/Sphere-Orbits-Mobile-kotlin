@@ -19,17 +19,19 @@ object NoteValidator {
             errors.add(ValidationError("contentFormat", "Invalid content format"))
         }
 
-        if (note.title != null) {
-            if (note.title.isBlank()) {
+        val title = note.title
+        if (title != null) {
+            if (title.isBlank()) {
                 errors.add(ValidationError("title", "Title cannot be empty if provided"))
             }
-            if (note.title.length > 255) {
+            if (title.length > 255) {
                 errors.add(ValidationError("title", "Title must be 255 characters or less"))
             }
         }
 
-        if (note.color != null) {
-            if (!note.color.matches(Regex("^#[0-9A-Fa-f]{6}$"))) {
+        val color = note.color
+        if (color != null) {
+            if (!color.matches(Regex("^#[0-9A-Fa-f]{6}$"))) {
                 errors.add(ValidationError("color", "Invalid color format. Must be #RRGGBB"))
             }
         }

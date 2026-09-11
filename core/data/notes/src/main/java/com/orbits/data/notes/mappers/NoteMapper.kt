@@ -1,7 +1,7 @@
 package com.orbits.data.notes.mappers
 
 import com.orbits.core.common.extensions.nowUtc
-import com.orbits.data.notes.local.NoteEntity
+import com.orbits.data.notes.NoteEntity
 import com.orbits.data.notes.remote.NoteDto
 import com.orbits.data.notes.remote.CreateNoteRequest
 import com.orbits.data.notes.remote.UpdateNoteRequest
@@ -19,11 +19,10 @@ internal class NoteMapper @Inject constructor() {
             title = entity.title,
             content = entity.content,
             contentFormat = entity.contentFormat,
-            tags = if (entity.tags.isNullOrBlank()) {
-                emptyList()
-            } else {
-                entity.tags.split(",").map { it.trim() }.filter { it.isNotBlank() }
-            },
+            tags = entity.tags?.let { tags ->
+                if (tags.isBlank()) emptyList()
+                else tags.split(",").map { it.trim() }.filter { it.isNotBlank() }
+            } ?: emptyList(),
             isPinned = entity.isPinned,
             isArchived = entity.isArchived,
             color = entity.color,
@@ -98,11 +97,10 @@ internal class NoteMapper @Inject constructor() {
             title = entity.title,
             content = entity.content,
             contentFormat = entity.contentFormat,
-            tags = if (entity.tags.isNullOrBlank()) {
-                emptyList()
-            } else {
-                entity.tags.split(",").map { it.trim() }.filter { it.isNotBlank() }
-            },
+            tags = entity.tags?.let { tags ->
+                if (tags.isBlank()) emptyList()
+                else tags.split(",").map { it.trim() }.filter { it.isNotBlank() }
+            } ?: emptyList(),
             isPinned = entity.isPinned,
             isArchived = entity.isArchived,
             color = entity.color,

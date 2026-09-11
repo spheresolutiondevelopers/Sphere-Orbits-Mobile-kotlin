@@ -2,12 +2,14 @@ package com.orbits.data.chat.mappers
 
 import com.orbits.core.common.extensions.nowUtc
 import com.orbits.core.model.UserDto
-import com.orbits.data.chat.local.MessageEntity
-import com.orbits.data.chat.local.ConversationEntity
-import com.orbits.data.chat.local.ConversationParticipantEntity
+import com.orbits.data.chat.MessageEntity
+import com.orbits.data.chat.ConversationEntity
+import com.orbits.data.chat.ConversationParticipantEntity
 import com.orbits.data.chat.remote.MessageDto
 import com.orbits.data.chat.remote.ConversationDto
 import com.orbits.data.chat.remote.SendMessageRequest
+import com.orbits.data.chat.remote.CreateConversationRequest
+import com.orbits.data.chat.remote.UpdateConversationRequest
 import com.orbits.domain.chat.Message
 import com.orbits.domain.chat.Conversation
 import com.orbits.domain.chat.ConversationParticipant
@@ -235,6 +237,23 @@ internal class ConversationMapper @Inject constructor(
             isArchived = dto.isArchived,
             isMuted = dto.isMuted,
             mutedUntil = dto.mutedUntil,
+            lastMessageId = dto.lastMessage?.id,
+            lastMessageContent = dto.lastMessage?.content,
+            lastMessageSentAt = dto.lastMessage?.sentAt,
+            createdAt = dto.createdAt,
+            updatedAt = dto.updatedAt
+        )
+    }
+
+    fun toEntity(dto: com.orbits.core.network.api.ConversationDto): ConversationEntity {
+        return ConversationEntity(
+            id = dto.id,
+            type = dto.type,
+            name = dto.name,
+            avatarUrl = null, // Not in Network DTO? Let's check.
+            isArchived = false,
+            isMuted = false,
+            mutedUntil = null,
             lastMessageId = dto.lastMessage?.id,
             lastMessageContent = dto.lastMessage?.content,
             lastMessageSentAt = dto.lastMessage?.sentAt,

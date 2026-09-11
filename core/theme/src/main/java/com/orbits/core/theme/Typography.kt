@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.orbits.core.theme.R
 
 // ─── Font Families ─────────────────────────────────────────────
 val OutfitFontFamily = FontFamily(

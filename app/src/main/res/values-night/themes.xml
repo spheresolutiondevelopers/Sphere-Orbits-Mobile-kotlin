@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ─── Dark Theme ───────────────────────────────────────────── -->
+    <style name="Theme.Sphere" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Dark theme colors handled by Compose MaterialTheme -->
+    </style>
+</resources>

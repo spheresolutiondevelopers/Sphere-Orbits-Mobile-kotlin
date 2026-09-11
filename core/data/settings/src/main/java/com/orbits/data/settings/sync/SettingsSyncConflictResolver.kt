@@ -1,6 +1,6 @@
 package com.orbits.data.settings.sync
 
-import com.orbits.data.settings.local.SettingsEntity
+import com.orbits.data.settings.SettingsEntity
 import javax.inject.Inject
 
 internal class SettingsSyncConflictResolver @Inject constructor() {

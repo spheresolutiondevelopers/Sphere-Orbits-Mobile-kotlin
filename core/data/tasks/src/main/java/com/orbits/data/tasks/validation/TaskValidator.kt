@@ -29,7 +29,8 @@ object TaskValidator {
             errors.add(ValidationError("title", "Task title must be 255 characters or less"))
         }
 
-        if (task.description != null && task.description.length > 4000) {
+        val description = task.description
+        if (description != null && description.length > 4000) {
             errors.add(ValidationError("description", "Description must be 4000 characters or less"))
         }
 
@@ -49,15 +50,18 @@ object TaskValidator {
             errors.add(ValidationError("completionPercentage", "Completion percentage must be 0-100"))
         }
 
-        if (task.locationName != null && task.locationName.length > 255) {
+        val locationName = task.locationName
+        if (locationName != null && locationName.length > 255) {
             errors.add(ValidationError("locationName", "Location name must be 255 characters or less"))
         }
 
-        if (task.locationAddress != null && task.locationAddress.length > 500) {
+        val locationAddress = task.locationAddress
+        if (locationAddress != null && locationAddress.length > 500) {
             errors.add(ValidationError("locationAddress", "Location address must be 500 characters or less"))
         }
 
-        if (task.notes != null && task.notes.length > 2000) {
+        val notes = task.notes
+        if (notes != null && notes.length > 2000) {
             errors.add(ValidationError("notes", "Notes must be 2000 characters or less"))
         }
 

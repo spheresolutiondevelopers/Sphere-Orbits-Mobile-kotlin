@@ -51,7 +51,7 @@ internal class ZoomClient @Inject constructor() {
                 .build()
 
             val response = httpClient.newCall(httpRequest).execute()
-            val responseBody = response.body?.string()
+            val responseBody = response.body.string()
 
             if (response.isSuccessful && responseBody != null) {
                 val zoomResponse = json.decodeFromString(ZoomMeetingResponse.serializer(), responseBody)
@@ -92,7 +92,7 @@ internal class ZoomClient @Inject constructor() {
                 Logger.d(TAG, "Zoom meeting updated: $meetingId")
                 Result.Success(Unit)
             } else {
-                val body = response.body?.string()
+                val body = response.body.string()
                 Logger.e(TAG, "Zoom API error: ${response.code} - $body")
                 Result.Error(Exception("Zoom API error: ${response.code}"))
             }
@@ -122,7 +122,7 @@ internal class ZoomClient @Inject constructor() {
                 Logger.d(TAG, "Zoom meeting deleted: $meetingId")
                 Result.Success(Unit)
             } else {
-                val body = response.body?.string()
+                val body = response.body.string()
                 Logger.e(TAG, "Zoom API error: ${response.code} - $body")
                 Result.Error(Exception("Zoom API error: ${response.code}"))
             }
@@ -147,7 +147,7 @@ internal class ZoomClient @Inject constructor() {
                 .build()
 
             val response = httpClient.newCall(httpRequest).execute()
-            val responseBody = response.body?.string()
+            val responseBody = response.body.string()
 
             if (response.isSuccessful && responseBody != null) {
                 val zoomResponse = json.decodeFromString(ZoomMeetingResponse.serializer(), responseBody)

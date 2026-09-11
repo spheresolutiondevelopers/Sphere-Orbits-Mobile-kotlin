@@ -10,7 +10,7 @@
 
 package com.orbits.data.tasks.sync
 
-import com.orbits.data.tasks.local.TaskEntity
+import com.orbits.data.tasks.TaskEntity
 import com.orbits.data.tasks.mappers.TaskMapper
 import com.orbits.domain.tasks.Task
 import javax.inject.Inject
@@ -66,7 +66,7 @@ internal class TaskSyncConflictResolver @Inject constructor(
             )
         } else {
             // Server is newer: server wins
-            taskMapper.toDomain(server)
+            server
         }
     }
 }

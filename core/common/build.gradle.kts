@@ -17,21 +17,5 @@ android {
 }
 
 dependencies {
-    // Kotlin
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.kotlin.coroutines)
-    implementation(libs.kotlin.serialization)
-
-    // AndroidX
-    implementation(libs.androidx.core)
-    implementation(libs.androidx.lifecycle.runtime)
-
-    // Logging
-    implementation(libs.timber)
-
-    // Testing
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlin.coroutines.test)
-    testImplementation(libs.mockito.core)
-    testImplementation(libs.mockito.kotlin)
+    // Core dependencies are provided by sphere.android.library convention plugin
 }

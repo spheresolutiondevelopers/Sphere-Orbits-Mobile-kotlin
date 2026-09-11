@@ -9,8 +9,8 @@ import com.orbits.core.database.dao.SyncQueueDao
 import com.orbits.core.network.api.AppointmentApi
 import com.orbits.core.network.error.ApiErrorParser
 import com.orbits.data.sync.SyncQueueEntity
-import com.orbits.data.appointments.local.AppointmentEntity
-import com.orbits.data.appointments.local.ParticipantEntity
+import com.orbits.data.appointments.AppointmentEntity
+import com.orbits.data.appointments.ParticipantEntity
 import com.orbits.data.appointments.mappers.AppointmentMapper
 import com.orbits.data.appointments.mappers.ParticipantMapper
 import com.orbits.domain.appointments.Appointment
@@ -18,6 +18,7 @@ import com.orbits.domain.appointments.AppointmentParticipant
 import com.orbits.domain.appointments.AppointmentRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -404,8 +405,9 @@ internal class AppointmentRepositoryImpl @Inject constructor(
         require(appointment.reminderMinutesBefore in 0..1440) {
             "Reminder minutes must be 0-1440"
         }
-        if (appointment.isVirtual && appointment.meetingLink != null) {
-            require(appointment.meetingLink.startsWith("http")) {
+        val meetingLink = appointment.meetingLink
+        if (appointment.isVirtual && meetingLink != null) {
+            require(meetingLink.startsWith("http")) {
                 "Meeting link must be a valid URL"
             }
         }

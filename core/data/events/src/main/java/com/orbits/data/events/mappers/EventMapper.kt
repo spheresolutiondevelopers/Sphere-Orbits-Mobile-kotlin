@@ -1,12 +1,12 @@
 package com.orbits.data.events.mappers
 
 import com.orbits.core.common.extensions.nowUtc
-import com.orbits.data.events.local.EventEntity
-import com.orbits.data.events.local.EventParticipantEntity
-import com.orbits.data.events.remote.EventDto
-import com.orbits.data.events.remote.EventParticipantDto
-import com.orbits.data.events.remote.CreateEventRequest
-import com.orbits.data.events.remote.UpdateEventRequest
+import com.orbits.data.events.EventEntity
+import com.orbits.data.events.EventParticipantEntity
+import com.orbits.core.network.api.EventDto
+import com.orbits.core.network.api.EventParticipantDto
+import com.orbits.core.network.api.CreateEventRequest
+import com.orbits.core.network.api.UpdateEventRequest
 import com.orbits.domain.events.Event
 import com.orbits.domain.events.EventParticipant
 import javax.inject.Inject

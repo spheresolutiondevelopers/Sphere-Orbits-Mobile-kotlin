@@ -1,16 +1,16 @@
 package com.orbits.data.analytics.mappers
 
 import com.orbits.core.common.extensions.nowUtc
-import com.orbits.data.analytics.local.AnalyticsEntity
-import com.orbits.data.analytics.local.AnalyticsSummaryEntity
-import com.orbits.data.analytics.remote.AnalyticsEventDto
-import com.orbits.data.analytics.remote.CreateAnalyticsEventRequest
-import com.orbits.data.analytics.remote.ProductivityStatsDto
-import com.orbits.data.analytics.remote.TaskCompletionTrendDto
-import com.orbits.data.analytics.remote.CategoryBreakdownDto
-import com.orbits.data.analytics.remote.TimeAllocationDto
-import com.orbits.data.analytics.remote.ProductivityInsightDto
-import com.orbits.data.analytics.remote.FocusTimeDto
+import com.orbits.data.analytics.AnalyticsEntity
+import com.orbits.data.analytics.AnalyticsSummaryEntity
+import com.orbits.core.model.AnalyticsEventDto
+import com.orbits.core.model.CreateAnalyticsEventRequest
+import com.orbits.core.model.ProductivityStatsDto
+import com.orbits.core.model.TaskCompletionTrendDto
+import com.orbits.core.model.CategoryBreakdownDto
+import com.orbits.core.model.TimeAllocationDto
+import com.orbits.core.model.ProductivityInsightDto
+import com.orbits.core.model.FocusTimeDto
 import com.orbits.domain.analytics.AnalyticsEvent
 import com.orbits.domain.analytics.ProductivityStats
 import com.orbits.domain.analytics.TaskCompletionTrend
@@ -41,13 +41,13 @@ internal class AnalyticsMapper @Inject constructor() {
             entityId = entity.entityId,
             entityType = entity.entityType,
             value = entity.value,
-            metadata = if (entity.metadata != null) {
+            metadata = entity.metadata?.let { metadata ->
                 try {
-                    json.decodeFromString<Map<String, String>>(entity.metadata)
+                    json.decodeFromString<Map<String, String>>(metadata)
                 } catch (e: Exception) {
                     emptyMap()
                 }
-            } else emptyMap(),
+            } ?: emptyMap(),
             sessionId = entity.sessionId,
             eventTimestamp = entity.eventTimestamp,
             createdAt = entity.createdAt
@@ -214,17 +214,17 @@ internal class AnalyticsMapper @Inject constructor() {
         )
     }
 
-    fun toDomainList(dtos: List<CategoryBreakdownDto>): List<CategoryBreakdown> {
+    fun toCategoryBreakdownDomainList(dtos: List<CategoryBreakdownDto>): List<CategoryBreakdown> {
         return dtos.map { toDomain(it) }
     }
 
-    fun toDtoList(domains: List<CategoryBreakdown>): List<CategoryBreakdownDto> {
+    fun toCategoryBreakdownDtoList(domains: List<CategoryBreakdown>): List<CategoryBreakdownDto> {
         return domains.map { toDto(it) }
     }
 
     // ─── Time Allocation: DTO ↔ Domain ───────────────────────────
 
-    fun toDomain(dto: TimeAllocationDto): TimeAllocation {
+    fun toTimeAllocationDomain(dto: TimeAllocationDto): TimeAllocation {
         return TimeAllocation(
             category = dto.category,
             hours = dto.hours,
@@ -233,7 +233,7 @@ internal class AnalyticsMapper @Inject constructor() {
         )
     }
 
-    fun toDto(domain: TimeAllocation): TimeAllocationDto {
+    fun toTimeAllocationDto(domain: TimeAllocation): TimeAllocationDto {
         return TimeAllocationDto(
             category = domain.category,
             hours = domain.hours,
@@ -242,17 +242,17 @@ internal class AnalyticsMapper @Inject constructor() {
         )
     }
 
-    fun toDomainList(dtos: List<TimeAllocationDto>): List<TimeAllocation> {
-        return dtos.map { toDomain(it) }
+    fun toTimeAllocationDomainList(dtos: List<TimeAllocationDto>): List<TimeAllocation> {
+        return dtos.map { toTimeAllocationDomain(it) }
     }
 
-    fun toDtoList(domains: List<TimeAllocation>): List<TimeAllocationDto> {
-        return domains.map { toDto(it) }
+    fun toTimeAllocationDtoList(domains: List<TimeAllocation>): List<TimeAllocationDto> {
+        return domains.map { toTimeAllocationDto(it) }
     }
 
     // ─── Productivity Insights: DTO ↔ Domain ─────────────────────
 
-    fun toDomain(dto: ProductivityInsightDto): ProductivityInsight {
+    fun toProductivityInsightDomain(dto: ProductivityInsightDto): ProductivityInsight {
         return ProductivityInsight(
             title = dto.title,
             description = dto.description,
@@ -263,7 +263,7 @@ internal class AnalyticsMapper @Inject constructor() {
         )
     }
 
-    fun toDto(domain: ProductivityInsight): ProductivityInsightDto {
+    fun toProductivityInsightDto(domain: ProductivityInsight): ProductivityInsightDto {
         return ProductivityInsightDto(
             title = domain.title,
             description = domain.description,
@@ -274,17 +274,17 @@ internal class AnalyticsMapper @Inject constructor() {
         )
     }
 
-    fun toDomainList(dtos: List<ProductivityInsightDto>): List<ProductivityInsight> {
-        return dtos.map { toDomain(it) }
+    fun toProductivityInsightDomainList(dtos: List<ProductivityInsightDto>): List<ProductivityInsight> {
+        return dtos.map { toProductivityInsightDomain(it) }
     }
 
-    fun toDtoList(domains: List<ProductivityInsight>): List<ProductivityInsightDto> {
-        return domains.map { toDto(it) }
+    fun toProductivityInsightDtoList(domains: List<ProductivityInsight>): List<ProductivityInsightDto> {
+        return domains.map { toProductivityInsightDto(it) }
     }
 
     // ─── Focus Time: DTO ↔ Domain ────────────────────────────────
 
-    fun toDomain(dto: FocusTimeDto): FocusTime {
+    fun toFocusTimeDomain(dto: FocusTimeDto): FocusTime {
         return FocusTime(
             date = dto.date,
             hours = dto.hours,
@@ -293,7 +293,7 @@ internal class AnalyticsMapper @Inject constructor() {
         )
     }
 
-    fun toDto(domain: FocusTime): FocusTimeDto {
+    fun toFocusTimeDto(domain: FocusTime): FocusTimeDto {
         return FocusTimeDto(
             date = domain.date,
             hours = domain.hours,
@@ -302,12 +302,12 @@ internal class AnalyticsMapper @Inject constructor() {
         )
     }
 
-    fun toDomainList(dtos: List<FocusTimeDto>): List<FocusTime> {
-        return dtos.map { toDomain(it) }
+    fun toFocusTimeDomainList(dtos: List<FocusTimeDto>): List<FocusTime> {
+        return dtos.map { toFocusTimeDomain(it) }
     }
 
-    fun toDtoList(domains: List<FocusTime>): List<FocusTimeDto> {
-        return domains.map { toDto(it) }
+    fun toFocusTimeDtoList(domains: List<FocusTime>): List<FocusTimeDto> {
+        return domains.map { toFocusTimeDto(it) }
     }
 
     // ─── Dashboard Stats: Aggregate ──────────────────────────────
@@ -325,10 +325,10 @@ internal class AnalyticsMapper @Inject constructor() {
             today = toDomain(today),
             week = toDomain(week),
             month = toDomain(month),
-            insights = toDomainList(insights),
+            insights = toProductivityInsightDomainList(insights),
             taskTrend = toDomain(taskTrend),
-            categoryBreakdown = toDomainList(categoryBreakdown),
-            timeAllocation = toDomainList(timeAllocation)
+            categoryBreakdown = toCategoryBreakdownDomainList(categoryBreakdown),
+            timeAllocation = toTimeAllocationDomainList(timeAllocation)
         )
     }
 

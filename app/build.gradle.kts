@@ -19,6 +19,18 @@ android {
         versionCode = 1
         versionName = "1.0.0"
     }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/DEPENDENCIES"
+            excludes += "/META-INF/LICENSE*"
+            excludes += "/META-INF/NOTICE*"
+            excludes += "/META-INF/*.kotlin_module"
+            excludes += "/META-INF/io.netty.versions.properties"
+            excludes += "/META-INF/INDEX.LIST"
+        }
+    }
 }
 
 // ─── Dependencies ──────────────────────────────────────────────
@@ -30,6 +42,13 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:database"))
     implementation(project(":core:sync"))
+    implementation(project(":core:theme"))
+
+    // WorkManager & Hilt Work
+    implementation(libs.workmanager)
+    implementation(libs.hilt.work)
+    ksp(libs.hilt.work.compiler)
+    ksp(libs.hilt.compiler)
 
     // ─── Domain Modules ────────────────────────────────────────
     implementation(project(":core:domain:auth"))
@@ -52,10 +71,16 @@ dependencies {
     implementation(project(":feature:meetings"))
     implementation(project(":feature:appointments"))
     implementation(project(":feature:chat"))
-    implementation(project(":feature:notes"))
+    implementation(project(":feature:notes")) {
+        exclude(group = "com.atlassian.commonmark")
+    }
     implementation(project(":feature:analytics"))
     implementation(project(":feature:settings"))
 
     // ─── Splash Screen ─────────────────────────────────────────
     implementation("androidx.core:core-splashscreen:1.0.1")
+}
+
+configurations.all {
+    exclude(group = "com.atlassian.commonmark")
 }

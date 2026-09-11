@@ -7,12 +7,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.kotlin.coroutines)
-    implementation(libs.kotlin.serialization)
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-
     // Internal modules
     implementation(project(":core:common"))
     implementation(project(":core:model"))
@@ -22,10 +16,4 @@ dependencies {
 
     // WebSocket support
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
-    // Testing
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlin.coroutines.test)
-    testImplementation(libs.mockito.core)
-    testImplementation(libs.mockito.kotlin)
 }

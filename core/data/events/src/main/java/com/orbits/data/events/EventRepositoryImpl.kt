@@ -9,8 +9,8 @@ import com.orbits.core.database.dao.SyncQueueDao
 import com.orbits.core.network.api.EventApi
 import com.orbits.core.network.error.ApiErrorParser
 import com.orbits.data.sync.SyncQueueEntity
-import com.orbits.data.events.local.EventEntity
-import com.orbits.data.events.local.EventParticipantEntity
+import com.orbits.data.events.EventEntity
+import com.orbits.data.events.EventParticipantEntity
 import com.orbits.data.events.mappers.EventMapper
 import com.orbits.data.events.mappers.EventParticipantMapper
 import com.orbits.domain.events.Event
@@ -71,7 +71,7 @@ internal class EventRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUpcomingEvents(): Flow<List<Event>> {
+    override fun getUpcomingEvents(): Flow<List<Event>> {
         return eventDao.getUpcomingEvents(getUserId())
             .map { entities -> eventMapper.toDomainList(entities) }
     }
@@ -80,7 +80,7 @@ internal class EventRepositoryImpl @Inject constructor(
 
     override suspend fun getParticipants(eventId: String): Result<List<EventParticipant>> {
         return try {
-            val entities = eventDao.getParticipantsForEvent(eventId)
+            val entities = eventDao.getParticipantsForEventSuspend(eventId)
             Result.Success(participantMapper.toDomainList(entities))
         } catch (e: Exception) {
             Logger.e(TAG, "Error fetching participants for event $eventId", e)
@@ -124,7 +124,7 @@ internal class EventRepositoryImpl @Inject constructor(
         status: String
     ): Result<Unit> {
         return try {
-            eventDao.updateParticipantStatus(eventId, participantId, status)
+            eventDao.updateParticipantStatus(eventId, participantId, status, nowUtc())
 
             enqueueSync(SyncQueueEntity(
                 entityType = "event_participant",
@@ -205,7 +205,7 @@ internal class EventRepositoryImpl @Inject constructor(
 
     override suspend fun deleteEvent(eventId: String): Result<Unit> {
         return try {
-            eventDao.softDeleteEvent(eventId)
+            eventDao.softDeleteEvent(eventId, nowUtc())
 
             enqueueSync(SyncQueueEntity(
                 entityType = "event",
@@ -224,7 +224,7 @@ internal class EventRepositoryImpl @Inject constructor(
 
     override suspend fun restoreEvent(eventId: String): Result<Event> {
         return try {
-            eventDao.restoreEvent(eventId)
+            eventDao.restoreEvent(eventId, nowUtc())
 
             val entity = eventDao.getEvent(eventId)
             if (entity != null) {
@@ -270,11 +270,9 @@ internal class EventRepositoryImpl @Inject constructor(
 
             // Pull latest from server
             val response = eventApi.getEvents()
-            response.data?.let { dtos ->
-                dtos.forEach { dto ->
-                    val entity = eventMapper.toEntity(dto)
-                    eventDao.insertEvent(entity)
-                }
+            response.items.forEach { dto ->
+                val entity = eventMapper.toEntity(dto)
+                eventDao.insertEvent(entity)
             }
 
             Result.Success(Unit)
@@ -301,16 +299,20 @@ internal class EventRepositoryImpl @Inject constructor(
         require(event.status in listOf("planned", "ongoing", "completed", "cancelled")) {
             "Invalid event status"
         }
-        if (event.startDateTime != null && event.endDateTime != null) {
-            require(event.endDateTime > event.startDateTime) {
+        val startDateTime = event.startDateTime
+        val endDateTime = event.endDateTime
+        if (startDateTime != null && endDateTime != null) {
+            require(endDateTime > startDateTime) {
                 "End time must be after start time"
             }
         }
-        if (event.budget != null && event.budget < 0) {
-            require(event.budget >= 0) { "Budget cannot be negative" }
+        val budget = event.budget
+        if (budget != null && budget < 0) {
+            require(budget >= 0) { "Budget cannot be negative" }
         }
-        if (event.maxAttendees != null && event.maxAttendees < 0) {
-            require(event.maxAttendees >= 0) { "Max attendees cannot be negative" }
+        val maxAttendees = event.maxAttendees
+        if (maxAttendees != null && maxAttendees < 0) {
+            require(maxAttendees >= 0) { "Max attendees cannot be negative" }
         }
         // Additional validation as needed
     }

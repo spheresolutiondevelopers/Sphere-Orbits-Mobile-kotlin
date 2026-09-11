@@ -15,24 +15,24 @@ pluginManagement {
         gradlePluginPortal()
     }
     plugins {
-        id("com.android.application") version "8.2.0"
-        id("com.android.library") version "8.2.0"
-        id("org.jetbrains.kotlin.android") version "1.9.20"
-        id("com.google.dagger.hilt.android") version "2.48"
-        id("org.jetbrains.kotlin.kapt") version "1.9.20"
-        id("org.jetbrains.kotlin.plugin.serialization") version "1.9.20"
+        id("com.android.application") version "9.3.1"
+        id("com.android.library") version "9.3.1"
+        id("com.google.dagger.hilt.android") version "2.60.1"
+        id("com.google.devtools.ksp") version "2.3.11"
+        id("org.jetbrains.kotlin.kapt") version "2.4.10"
+        id("org.jetbrains.kotlin.plugin.serialization") version "2.4.10"
+        id("org.jetbrains.kotlin.plugin.compose") version "2.4.10"
     }
+}
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
-    }
-    versionCatalogs {
-        create("libs") {
-            from(files("gradle/libs.versions.toml"))
-        }
     }
 }
 
@@ -51,7 +51,8 @@ include(
     ":core:network",
     ":core:database",
     ":core:sync",
-    ":core:testing"
+    ":core:testing",
+    ":core:theme"
 )
 
 // ─── Data Layer (Decentralized) ──────────────────────────────

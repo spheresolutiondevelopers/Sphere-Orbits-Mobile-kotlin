@@ -1,0 +1,6 @@
+- [ ] Enable `buildConfig` in `:core:network`
+- [ ] Fix imports and injection in `ApiClient.kt`
+- [ ] Fix missing imports in `ChatApi.kt` and `AnalyticsApi.kt`
+- [ ] Fix `BuildConfig` import in `LoggingInterceptor.kt`
+- [ ] Revert to default fonts in `Typography.kt`
+- [ ] Verify build

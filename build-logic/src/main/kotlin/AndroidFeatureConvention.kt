@@ -8,108 +8,84 @@
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
 
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.dsl.LibraryExtension
+import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 /**
  * Convention plugin for all :feature modules.
- * Configures library modules with Compose, Hilt, and feature-specific dependencies.
- *
- * Each feature module automatically gets access to:
- *   - All Compose and Hilt dependencies
- *   - The core common module
- *   - Its corresponding domain module
  */
 class AndroidFeatureConvention : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             with(pluginManager) {
                 apply("com.android.library")
-                apply("org.jetbrains.kotlin.android")
                 apply("com.google.dagger.hilt.android")
-                apply("org.jetbrains.kotlin.kapt")
+                apply("com.google.devtools.ksp")
                 apply("org.jetbrains.kotlin.plugin.serialization")
+                apply("org.jetbrains.kotlin.plugin.compose")
             }
 
-            extensions.configure<BaseAppModuleExtension> {
-                compileSdk = 34
+            extensions.configure<LibraryExtension> {
+                compileSdk = 37
 
                 defaultConfig {
-                    minSdk = 24
-                    targetSdk = 34
-
+                    minSdk = 26
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                 }
 
                 compileOptions {
-                    sourceCompatibility = JavaVersion.VERSION_17
-                    targetCompatibility = JavaVersion.VERSION_17
+                    sourceCompatibility = JavaVersion.VERSION_21
+                    targetCompatibility = JavaVersion.VERSION_21
                 }
 
                 buildFeatures {
                     compose = true
                     buildConfig = false
                 }
-
-                composeOptions {
-                    kotlinCompilerExtensionVersion = "1.5.4"
-                }
             }
 
-            // ─── Dependencies ──────────────────────────────────────────
             dependencies {
-                // Compose
-                add("implementation", platform(project.libs.findLibrary("compose-bom").get()))
-                add("implementation", project.libs.findLibrary("compose-ui").get())
-                add("implementation", project.libs.findLibrary("compose-ui-graphics").get())
-                add("implementation", project.libs.findLibrary("compose-ui-tooling-preview").get())
-                add("implementation", project.libs.findLibrary("compose-material3").get())
-                add("implementation", project.libs.findLibrary("compose-material-icons").get())
-                add("implementation", project.libs.findLibrary("androidx-activity").get())
-                add("implementation", project.libs.findLibrary("navigation-compose").get())
-                add("implementation", project.libs.findLibrary("androidx-lifecycle-viewmodel").get())
-                add("implementation", project.libs.findLibrary("androidx-lifecycle-runtime").get())
+                val bom = libsCatalog.findLibrary("compose-bom").get()
+                add("implementation", platform(bom))
+                add("androidTestImplementation", platform(bom))
+                add("debugImplementation", platform(bom))
+                add("testImplementation", platform(bom))
+                add("implementation", libsCatalog.findBundle("compose").get())
+                add("implementation", libsCatalog.findLibrary("androidx-activity").get())
+                add("implementation", libsCatalog.findLibrary("navigation-compose").get())
+                add("implementation", libsCatalog.findBundle("androidx").get())
 
-                // Hilt
-                add("implementation", project.libs.findLibrary("hilt-android").get())
-                add("implementation", project.libs.findLibrary("hilt-navigation-compose").get())
-                add("kapt", project.libs.findLibrary("hilt-compiler").get())
+                add("implementation", libsCatalog.findLibrary("hilt-android").get())
+                add("implementation", libsCatalog.findLibrary("hilt-navigation-compose").get())
+                add("ksp", libsCatalog.findLibrary("hilt-compiler").get())
 
-                // Core
-                add("implementation", project.libs.findLibrary("androidx-core").get())
-                add("implementation", project.libs.findLibrary("timber").get())
+                add("implementation", libsCatalog.findLibrary("timber").get())
+                add("implementation", libsCatalog.findLibrary("kt-stdlib").get())
+                add("implementation", libsCatalog.findBundle("coroutines").get())
 
-                // Project dependencies — automatically added
                 add("implementation", project(":core:common"))
                 add("implementation", project(":core:model"))
 
-                // DEBUG
-                add("debugImplementation", project.libs.findLibrary("compose-ui-tooling").get())
+                add("debugImplementation", libsCatalog.findLibrary("compose-ui-tooling").get())
 
-                // TEST
-                add("testImplementation", project.libs.findLibrary("junit").get())
-                add("testImplementation", project.libs.findLibrary("kotlin-coroutines-test").get())
-                add("testImplementation", project.libs.findLibrary("mockito-core").get())
-                add("testImplementation", project.libs.findLibrary("mockito-kotlin").get())
-                add("testImplementation", project.libs.findLibrary("compose-ui-test").get())
+                add("testImplementation", libsCatalog.findBundle("test").get())
+                add("testImplementation", libsCatalog.findLibrary("compose-ui-test").get())
 
-                add("androidTestImplementation", project.libs.findLibrary("junit-ext").get())
-                add("androidTestImplementation", project.libs.findLibrary("espresso-core").get())
-                add("androidTestImplementation", project.libs.findLibrary("compose-ui-test").get())
+                add("androidTestImplementation", libsCatalog.findBundle("androidTest").get())
+                add("androidTestImplementation", libsCatalog.findLibrary("compose-ui-test").get())
             }
 
-            // ─── Kotlin Compiler ───────────────────────────────────────
             tasks.withType<KotlinCompile>().configureEach {
-                kotlinOptions {
-                    jvmTarget = "17"
-                    freeCompilerArgs = listOf(
+                compilerOptions {
+                    jvmTarget.set(JvmTarget.JVM_21)
+                    freeCompilerArgs.addAll(
                         "-Xjsr305=strict",
                         "-opt-in=kotlin.RequiresOptIn",
                         "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",

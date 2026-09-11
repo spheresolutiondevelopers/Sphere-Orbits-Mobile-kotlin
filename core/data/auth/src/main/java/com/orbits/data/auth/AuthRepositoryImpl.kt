@@ -7,11 +7,12 @@ import com.orbits.core.common.extensions.nowUtc
 import com.orbits.core.database.dao.UserDao
 import com.orbits.core.network.api.AuthApi
 import com.orbits.core.network.error.ApiErrorParser
-import com.orbits.data.auth.local.AuthEntity
-import com.orbits.data.auth.local.TokenEntity
+import com.orbits.core.model.LoginRequest
+import com.orbits.core.model.RegisterRequest
+import com.orbits.core.model.RefreshTokenRequest
+import com.orbits.data.auth.AuthEntity
+import com.orbits.data.auth.TokenEntity
 import com.orbits.data.auth.mappers.AuthMapper
-import com.orbits.data.auth.remote.LoginRequest
-import com.orbits.data.auth.remote.RegisterRequest
 import com.orbits.domain.auth.AuthRepository
 import com.orbits.domain.auth.AuthUser
 import com.orbits.domain.auth.AuthTokens
@@ -49,14 +50,15 @@ internal class AuthRepositoryImpl @Inject constructor(
     }
 
     override fun observeCurrentUser(): Flow<AuthUser?> {
-        // Ideally, this would be a Flow tied to a shared currentUserId
-        // Simplification: return a dummy flow for now
-        return userDao.getActiveUsers()
+        return userDao.getActiveUsersFlow()
             .map { users -> users.firstOrNull() }
-            .map { entity -> entity?.let { authMapper.toDomain(it) } }
+            .map { entity -> entity?.let { authMapper.toDomain(entity) } }
     }
 
     override suspend fun isAuthenticated(): Boolean {
+        val user = getCurrentUser()
+        if (user?.isLocal == true) return true
+
         val token = tokenManager.getAccessToken()
         return token != null && !tokenManager.isTokenExpired()
     }
@@ -70,6 +72,13 @@ internal class AuthRepositoryImpl @Inject constructor(
                 password = credentials.password
             )
             val response = authApi.login(request)
+
+            // Clear existing local guest user if present
+            val currentUser = getCurrentUser()
+            if (currentUser?.isLocal == true) {
+                userDao.deleteAuth(currentUser.id)
+                userDao.deleteTokens(currentUser.id)
+            }
 
             // Save user and tokens locally
             val (userEntity, tokenEntity) = authMapper.toEntity(
@@ -96,6 +105,31 @@ internal class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun createLocalUser(data: RegistrationData?): Result<AuthUser> {
+        return try {
+            val now = nowUtc()
+            val localUser = AuthUser(
+                id = "local_${java.util.UUID.randomUUID()}",
+                email = data?.email ?: "local@sphere.local",
+                displayName = data?.displayName ?: (if (data != null) "${data.firstName} ${data.lastName}".trim() else "Local User"),
+                firstName = data?.firstName,
+                lastName = data?.lastName,
+                isLocal = true,
+                isActive = true,
+                createdAt = now,
+                updatedAt = now
+            )
+
+            userDao.insertAuth(authMapper.toEntity(localUser))
+
+            Logger.d(TAG, "Local user created: ${localUser.email}")
+            Result.Success(localUser)
+        } catch (e: Exception) {
+            Logger.e(TAG, "Error creating local user", e)
+            Result.Error(e)
+        }
+    }
+
     override suspend fun register(data: RegistrationData): Result<AuthUser> {
         return try {
             val request = RegisterRequest(
@@ -106,6 +140,13 @@ internal class AuthRepositoryImpl @Inject constructor(
                 lastName = data.lastName
             )
             val user = authApi.register(request)
+
+            // Clear existing local guest user if present
+            val currentUser = getCurrentUser()
+            if (currentUser?.isLocal == true) {
+                userDao.deleteAuth(currentUser.id)
+                userDao.deleteTokens(currentUser.id)
+            }
 
             // Save user locally (not logged in yet)
             val userEntity = authMapper.toEntity(authMapper.toDomain(user))

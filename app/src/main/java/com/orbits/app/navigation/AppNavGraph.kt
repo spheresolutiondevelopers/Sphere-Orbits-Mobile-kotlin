@@ -11,8 +11,7 @@
 package com.orbits.app.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -43,7 +42,7 @@ import com.orbits.feature.chat.ConversationScreen
 import com.orbits.feature.chat.ChatViewModel
 import com.orbits.feature.notes.NotesListScreen
 import com.orbits.feature.notes.NoteEditorScreen
-import com.orbits.feature.notes.NotesViewModel
+import com.orbits.feature.notes.NoteViewModel
 import com.orbits.feature.analytics.AnalyticsScreen
 import com.orbits.feature.analytics.AnalyticsViewModel
 import com.orbits.feature.settings.SettingsScreen
@@ -71,34 +70,33 @@ object Routes {
     const val MEETINGS = "meetings"
     const val MEETING_DETAIL = "meeting_detail/{meetingId}"
     const val APPOINTMENTS = "appointments"
-    const val APPOINTMENT_FORM = "appointment_form/{appointmentId?}"
+    const val APPOINTMENT_FORM = "appointment_form/{appointmentId}"
     const val CHAT = "chat"
     const val CONVERSATION = "conversation/{conversationId}"
     const val NOTES = "notes"
-    const val NOTE_EDITOR = "note_editor/{noteId?}"
+    const val NOTE_EDITOR = "note_editor/{noteId}"
     const val ANALYTICS = "analytics"
     const val SETTINGS = "settings"
     const val PROFILE_EDIT = "profile_edit"
     const val INTEGRATIONS = "integrations"
 
-    // Parameter extraction
+    // Parameter extraction helper
     fun taskId(route: String): String = route.substringAfter("task_detail/")
     fun eventId(route: String): String = route.substringAfter("event_detail/")
     fun meetingId(route: String): String = route.substringAfter("meeting_detail/")
     fun conversationId(route: String): String = route.substringAfter("conversation/")
     fun appointmentId(route: String): String? {
         val id = route.substringAfter("appointment_form/")
-        return if (id.isEmpty() || id == "null") null else id
+        return if (id.isEmpty() || id == "null" || id == "new") null else id
     }
     fun noteId(route: String): String? {
         val id = route.substringAfter("note_editor/")
-        return if (id.isEmpty() || id == "null") null else id
+        return if (id.isEmpty() || id == "null" || id == "new") null else id
     }
 }
 
 /**
  * Root navigation graph for the application.
- * Contains auth graph and main graph, with conditional navigation based on auth state.
  */
 @Composable
 fun AppNavGraph(
@@ -107,20 +105,13 @@ fun AppNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = startDestination,
-        builder = {
-            authGraph(navController)
-            mainGraph(navController)
-        }
-    )
+        startDestination = startDestination
+    ) {
+        authGraph(navController)
+        mainGraph(navController)
+    }
 }
 
-/**
- * Auth navigation graph
- * - Login screen
- * - Signup screen
- * All unauthenticated routes live here.
- */
 private fun NavGraphBuilder.authGraph(navController: NavHostController) {
     navigation(
         route = Routes.AUTH_GRAPH,
@@ -160,92 +151,65 @@ private fun NavGraphBuilder.authGraph(navController: NavHostController) {
     }
 }
 
-/**
- * Main navigation graph
- * All authenticated routes live here.
- */
 private fun NavGraphBuilder.mainGraph(navController: NavHostController) {
     navigation(
         route = Routes.MAIN_GRAPH,
         startDestination = Routes.DASHBOARD
     ) {
-        // ─── Dashboard ──────────────────────────────────────────
         composable(Routes.DASHBOARD) {
             val viewModel: DashboardViewModel = hiltViewModel()
             DashboardScreen(
                 viewModel = viewModel,
-                onNavigateToTasks = {
-                    navController.navigate(Routes.TASKS)
-                },
-                onNavigateToCalendar = {
-                    navController.navigate(Routes.CALENDAR)
-                },
-                onNavigateToMeetings = {
-                    navController.navigate(Routes.MEETINGS)
-                },
-                onNavigateToAppointments = {
-                    navController.navigate(Routes.APPOINTMENTS)
-                },
-                onNavigateToChat = {
-                    navController.navigate(Routes.CHAT)
-                },
-                onNavigateToNotes = {
-                    navController.navigate(Routes.NOTES)
-                },
-                onNavigateToAnalytics = {
-                    navController.navigate(Routes.ANALYTICS)
-                }
+                onNavigateToTasks = { navController.navigate(Routes.TASKS) },
+                onNavigateToCalendar = { navController.navigate(Routes.CALENDAR) },
+                onNavigateToMeetings = { navController.navigate(Routes.MEETINGS) },
+                onNavigateToAppointments = { navController.navigate(Routes.APPOINTMENTS) },
+                onNavigateToChat = { navController.navigate(Routes.CHAT) },
+                onNavigateToNotes = { navController.navigate(Routes.NOTES) },
+                onNavigateToAnalytics = { navController.navigate(Routes.ANALYTICS) },
+                onNavigateToTaskDetail = { taskId -> navController.navigate("task_detail/$taskId") },
+                onNavigateToSettings = { navController.navigate(Routes.SETTINGS) }
             )
         }
 
-        // ─── Tasks ──────────────────────────────────────────────
         composable(Routes.TASKS) {
             val viewModel: TaskViewModel = hiltViewModel()
             TaskListScreen(
                 viewModel = viewModel,
-                onNavigateToTaskDetail = { taskId ->
-                    navController.navigate("task_detail/$taskId")
-                }
+                onNavigateToTaskDetail = { taskId -> navController.navigate("task_detail/$taskId") },
+                onNavigateToCreate = { /* Navigate to create task */ }
             )
         }
 
         composable(Routes.TASK_DETAIL) { backStackEntry ->
-            val taskId = Routes.taskId(backStackEntry.route ?: "")
+            val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
             val viewModel: TaskViewModel = hiltViewModel()
             TaskDetailScreen(
                 viewModel = viewModel,
                 taskId = taskId,
                 onBack = { navController.popBackStack() },
-                onNavigateToEdit = {
-                    // Navigate to edit task screen (future)
-                }
+                onNavigateToEdit = { }
             )
         }
 
-        // ─── Calendar ────────────────────────────────────────────
         composable(Routes.CALENDAR) {
             val viewModel: CalendarViewModel = hiltViewModel()
             CalendarScreen(
                 viewModel = viewModel,
-                onNavigateToEventDetail = { eventId ->
-                    navController.navigate("event_detail/$eventId")
-                }
+                onNavigateToEventDetail = { eventId -> navController.navigate("event_detail/$eventId") }
             )
         }
 
-        // ─── Events ──────────────────────────────────────────────
         composable(Routes.EVENTS) {
             val viewModel: EventViewModel = hiltViewModel()
             EventListScreen(
                 viewModel = viewModel,
-                onNavigateToEventDetail = { eventId ->
-                    navController.navigate("event_detail/$eventId")
-                }
+                onNavigateToEventDetail = { eventId -> navController.navigate("event_detail/$eventId") }
             )
         }
 
         composable(Routes.EVENT_DETAIL) { backStackEntry ->
-            val eventId = Routes.eventId(backStackEntry.route ?: "")
+            val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
             val viewModel: EventViewModel = hiltViewModel()
             EventDetailScreen(
                 viewModel = viewModel,
@@ -254,19 +218,17 @@ private fun NavGraphBuilder.mainGraph(navController: NavHostController) {
             )
         }
 
-        // ─── Meetings ────────────────────────────────────────────
         composable(Routes.MEETINGS) {
             val viewModel: MeetingViewModel = hiltViewModel()
             MeetingListScreen(
                 viewModel = viewModel,
-                onNavigateToMeetingDetail = { meetingId ->
-                    navController.navigate("meeting_detail/$meetingId")
-                }
+                onNavigateToMeetingDetail = { meetingId -> navController.navigate("meeting_detail/$meetingId") },
+                onNavigateToCreate = { }
             )
         }
 
         composable(Routes.MEETING_DETAIL) { backStackEntry ->
-            val meetingId = Routes.meetingId(backStackEntry.route ?: "")
+            val meetingId = backStackEntry.arguments?.getString("meetingId") ?: ""
             val viewModel: MeetingViewModel = hiltViewModel()
             MeetingDetailScreen(
                 viewModel = viewModel,
@@ -275,44 +237,37 @@ private fun NavGraphBuilder.mainGraph(navController: NavHostController) {
             )
         }
 
-        // ─── Appointments ────────────────────────────────────────
         composable(Routes.APPOINTMENTS) {
             val viewModel: AppointmentViewModel = hiltViewModel()
             AppointmentListScreen(
                 viewModel = viewModel,
-                onNavigateToAppointmentForm = { appointmentId ->
-                    navController.navigate("appointment_form/$appointmentId")
-                },
-                onNavigateToNewAppointment = {
-                    navController.navigate("appointment_form/null")
-                }
+                onNavigateToAppointmentDetail = { id -> navController.navigate("appointment_form/$id") },
+                onNavigateToCreate = { navController.navigate("appointment_form/new") }
             )
         }
 
         composable(Routes.APPOINTMENT_FORM) { backStackEntry ->
-            val appointmentId = Routes.appointmentId(backStackEntry.route ?: "")
+            val appointmentId = backStackEntry.arguments?.getString("appointmentId")
             val viewModel: AppointmentViewModel = hiltViewModel()
             AppointmentFormScreen(
+                appointmentId = if (appointmentId == "new" || appointmentId == "null") null else appointmentId,
                 viewModel = viewModel,
-                appointmentId = appointmentId,
                 onBack = { navController.popBackStack() },
                 onSaveSuccess = { navController.popBackStack() }
             )
         }
 
-        // ─── Chat ────────────────────────────────────────────────
         composable(Routes.CHAT) {
             val viewModel: ChatViewModel = hiltViewModel()
             ChatListScreen(
                 viewModel = viewModel,
-                onNavigateToConversation = { conversationId ->
-                    navController.navigate("conversation/$conversationId")
-                }
+                onNavigateToConversation = { id -> navController.navigate("conversation/$id") },
+                onNavigateToNewChat = { }
             )
         }
 
         composable(Routes.CONVERSATION) { backStackEntry ->
-            val conversationId = Routes.conversationId(backStackEntry.route ?: "")
+            val conversationId = backStackEntry.arguments?.getString("conversationId") ?: ""
             val viewModel: ChatViewModel = hiltViewModel()
             ConversationScreen(
                 viewModel = viewModel,
@@ -321,56 +276,40 @@ private fun NavGraphBuilder.mainGraph(navController: NavHostController) {
             )
         }
 
-        // ─── Notes ───────────────────────────────────────────────
         composable(Routes.NOTES) {
-            val viewModel: NotesViewModel = hiltViewModel()
+            val viewModel: NoteViewModel = hiltViewModel()
             NotesListScreen(
                 viewModel = viewModel,
-                onNavigateToNoteEditor = { noteId ->
-                    navController.navigate("note_editor/$noteId")
-                },
-                onNavigateToNewNote = {
-                    navController.navigate("note_editor/null")
-                }
+                onNavigateToNoteEditor = { noteId -> navController.navigate("note_editor/$noteId") },
+                onNavigateToNewNote = { navController.navigate("note_editor/new") }
             )
         }
 
         composable(Routes.NOTE_EDITOR) { backStackEntry ->
-            val noteId = Routes.noteId(backStackEntry.route ?: "")
-            val viewModel: NotesViewModel = hiltViewModel()
+            val noteId = backStackEntry.arguments?.getString("noteId")
+            val viewModel: NoteViewModel = hiltViewModel()
             NoteEditorScreen(
+                noteId = if (noteId == "new" || noteId == "null") null else noteId,
                 viewModel = viewModel,
-                noteId = noteId,
                 onBack = { navController.popBackStack() },
                 onSaveSuccess = { navController.popBackStack() }
             )
         }
 
-        // ─── Analytics ───────────────────────────────────────────
         composable(Routes.ANALYTICS) {
             val viewModel: AnalyticsViewModel = hiltViewModel()
-            AnalyticsScreen(
-                viewModel = viewModel
-            )
+            AnalyticsScreen(viewModel = viewModel)
         }
 
-        // ─── Settings ────────────────────────────────────────────
         composable(Routes.SETTINGS) {
             val viewModel: SettingsViewModel = hiltViewModel()
             SettingsScreen(
                 viewModel = viewModel,
-                onNavigateToProfileEdit = {
-                    navController.navigate(Routes.PROFILE_EDIT)
-                },
-                onNavigateToIntegrations = {
-                    navController.navigate(Routes.INTEGRATIONS)
-                },
-                onNavigateToHelp = {
-                    // Open help/feedback screen (future)
-                },
-                onNavigateToAbout = {
-                    // Open about screen (future)
-                },
+                onNavigateToProfileEdit = { navController.navigate(Routes.PROFILE_EDIT) },
+                onNavigateToIntegrations = { navController.navigate(Routes.INTEGRATIONS) },
+                onNavigateToHelp = { },
+                onNavigateToAbout = { },
+                onNavigateToSignup = { navController.navigate(Routes.SIGNUP) },
                 onSignOut = {
                     navController.navigate(Routes.AUTH_GRAPH) {
                         popUpTo(Routes.MAIN_GRAPH) { inclusive = true }
@@ -383,7 +322,8 @@ private fun NavGraphBuilder.mainGraph(navController: NavHostController) {
             val viewModel: SettingsViewModel = hiltViewModel()
             ProfileEditScreen(
                 viewModel = viewModel,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onSaveSuccess = { navController.popBackStack() }
             )
         }
 

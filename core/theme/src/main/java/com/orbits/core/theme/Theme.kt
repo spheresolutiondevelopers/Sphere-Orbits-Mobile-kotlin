@@ -17,13 +17,48 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+
+/**
+ * Custom design tokens that extend Material3 ColorScheme.
+ */
+@Immutable
+data class SphereColors(
+    val glow: Color,
+    val border: Color,
+    val borderSecondary: Color,
+    val backgroundSecondary: Color,
+    val backgroundTertiary: Color,
+    val cardSecondary: Color,
+    val cardTertiary: Color,
+    val textSecondary: Color,
+    val textTertiary: Color,
+    val navBackground: Color,
+    val shadow: Color
+)
+
+val LocalSphereColors = staticCompositionLocalOf {
+    SphereColors(
+        glow = Color.Unspecified,
+        border = Color.Unspecified,
+        borderSecondary = Color.Unspecified,
+        backgroundSecondary = Color.Unspecified,
+        backgroundTertiary = Color.Unspecified,
+        cardSecondary = Color.Unspecified,
+        cardTertiary = Color.Unspecified,
+        textSecondary = Color.Unspecified,
+        textTertiary = Color.Unspecified,
+        navBackground = Color.Unspecified,
+        shadow = Color.Unspecified
+    )
+}
 
 /**
  * Theme mode enum.
@@ -35,125 +70,149 @@ enum class ThemeMode {
 }
 
 /**
- * CompositionLocal for theme mode preference.
- * Used to read theme mode from any composable.
+ * Theme palette enum for dynamic branding.
  */
-val LocalThemeMode = compositionLocalOf { ThemeMode.SYSTEM }
+enum class ThemePalette {
+    SPHERE,
+    DEEP_SEA,
+    FOREST,
+    SUNSET
+}
 
-/**
- * Color schemes.
- */
 private val DarkColorScheme = darkColorScheme(
-    primary = SpherePurple,
+    primary = SphereBase,
     onPrimary = Color.White,
-    primaryContainer = Color(0xFF1C1B3A),
-    onPrimaryContainer = Color(0xFFDDD9FF),
+    primaryContainer = BgDark2,
+    onPrimaryContainer = TextDark,
     secondary = SpherePink,
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFF2D1B3A),
-    onSecondaryContainer = Color(0xFFE9D5FF),
-    tertiary = SphereCoral,
+    secondaryContainer = CardDark2,
+    onSecondaryContainer = TextDark2,
+    tertiary = AccentBase,
     onTertiary = Color.White,
-    tertiaryContainer = Color(0xFF3D1B2E),
-    onTertiaryContainer = Color(0xFFFFD6E0),
+    background = BgDark,
+    onBackground = TextDark,
+    surface = CardDark,
+    onSurface = TextDark,
+    surfaceVariant = CardDark2,
+    onSurfaceVariant = TextDark2,
+    outline = BorderDark,
+    outlineVariant = BorderDark2,
     error = SphereRed,
-    onError = Color.White,
-    errorContainer = Color(0xFF3D1B1B),
-    onErrorContainer = Color(0xFFFFD6D6),
-    background = BackgroundDark,
-    onBackground = OnBackgroundDark,
-    surface = SurfaceDark,
-    onSurface = OnSurfaceDark,
-    surfaceVariant = SurfaceDarkSecondary,
-    onSurfaceVariant = OnSurfaceVariantDark,
-    outline = OutlineDark,
-    outlineVariant = OutlineVariantDark
+    onError = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = SpherePurple,
+    primary = SphereBase,
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFE8E3FF),
-    onPrimaryContainer = Color(0xFF2D1A8A),
+    primaryContainer = BgLight2,
+    onPrimaryContainer = TextLight,
     secondary = SpherePink,
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFF3E5FF),
-    onSecondaryContainer = Color(0xFF3A1A5E),
-    tertiary = SphereCoral,
+    secondaryContainer = CardLight2,
+    onSecondaryContainer = TextLight2,
+    tertiary = AccentBase,
     onTertiary = Color.White,
-    tertiaryContainer = Color(0xFFFFE0E6),
-    onTertiaryContainer = Color(0xFF6B1A30),
+    background = BgLight,
+    onBackground = TextLight,
+    surface = CardLight,
+    onSurface = TextLight,
+    surfaceVariant = CardLight2,
+    onSurfaceVariant = TextLight2,
+    outline = BorderLight,
     error = SphereRed,
-    onError = Color.White,
-    errorContainer = Color(0xFFFFD6D6),
-    onErrorContainer = Color(0xFF6B1A1A),
-    background = BackgroundLight,
-    onBackground = OnBackgroundLight,
-    surface = SurfaceLight,
-    onSurface = OnSurfaceLight,
-    surfaceVariant = SurfaceLightSecondary,
-    onSurfaceVariant = OnSurfaceVariantLight,
-    outline = OutlineLight,
-    outlineVariant = OutlineVariantLight
+    onError = Color.White
 )
 
 /**
  * Sphere Theme composable.
- * Wraps MaterialTheme with custom colors, typography, and shapes.
- * Supports dynamic color on Android 12+ when enabled.
- *
- * @param darkTheme Whether to use dark theme. If null, uses system setting.
- * @param dynamicColor Whether to use Material You dynamic color.
- * @param content Content to render with the theme.
+ * Supports dynamic color on Android 12+ and dynamic palettes.
  */
 @Composable
 fun SphereTheme(
-    darkTheme: Boolean? = null,
-    dynamicColor: Boolean = true,
+    themeMode: ThemeMode = ThemeMode.SYSTEM,
+    palette: ThemePalette = ThemePalette.SPHERE,
+    dynamicColor: Boolean = false, // Default to false to preserve brand identity
     content: @Composable () -> Unit
 ) {
-    // Determine if dark theme should be used
-    val isDark = darkTheme ?: isSystemInDarkTheme()
-
-    // Color scheme
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (isDark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        isDark -> DarkColorScheme
-        else -> LightColorScheme
+    val darkTheme = when (themeMode) {
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
     }
 
-    // Apply theme
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = SphereTypography,
-        shapes = SphereShapes,
-        content = content
-    )
+    val context = LocalContext.current
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+        darkTheme -> getDarkColorScheme(palette)
+        else -> getLightColorScheme(palette)
+    }
+
+    val sphereColors = if (darkTheme) {
+        SphereColors(
+            glow = SphereGlow,
+            border = BorderDark,
+            borderSecondary = BorderDark2,
+            backgroundSecondary = BgDark2,
+            backgroundTertiary = BgDark3,
+            cardSecondary = CardDark2,
+            cardTertiary = CardDark3,
+            textSecondary = TextDark2,
+            textTertiary = TextDark3,
+            navBackground = NavBgDark,
+            shadow = ShadowDark
+        )
+    } else {
+        SphereColors(
+            glow = SphereGlow.copy(alpha = 0.1f),
+            border = BorderLight,
+            borderSecondary = BorderLight,
+            backgroundSecondary = BgLight2,
+            backgroundTertiary = BgLight2,
+            cardSecondary = CardLight2,
+            cardTertiary = CardLight2,
+            textSecondary = TextLight2,
+            textTertiary = TextLight3,
+            navBackground = NavBgLight,
+            shadow = ShadowLight
+        )
+    }
+
+    CompositionLocalProvider(
+        LocalSphereColors provides sphereColors
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = SphereTypography,
+            shapes = SphereShapes,
+            content = content
+        )
+    }
 }
 
-/**
- * Extension to get the current color scheme.
- */
-val MaterialTheme.colorScheme: ColorScheme
-    @Composable
-    @ReadOnlyComposable
-    get() = MaterialTheme.colorScheme
+private fun getDarkColorScheme(palette: ThemePalette): ColorScheme {
+    return when (palette) {
+        ThemePalette.SPHERE -> DarkColorScheme
+        ThemePalette.DEEP_SEA -> DarkColorScheme.copy(primary = Color(0xFF0EA5E9))
+        ThemePalette.FOREST -> DarkColorScheme.copy(primary = Color(0xFF10B981))
+        ThemePalette.SUNSET -> DarkColorScheme.copy(primary = Color(0xFFF59E0B))
+    }
+}
 
-/**
- * Extension to get the current typography.
- */
-val MaterialTheme.typography: Typography
-    @Composable
-    @ReadOnlyComposable
-    get() = MaterialTheme.typography
+private fun getLightColorScheme(palette: ThemePalette): ColorScheme {
+    return when (palette) {
+        ThemePalette.SPHERE -> LightColorScheme
+        ThemePalette.DEEP_SEA -> LightColorScheme.copy(primary = Color(0xFF0284C7))
+        ThemePalette.FOREST -> LightColorScheme.copy(primary = Color(0xFF059669))
+        ThemePalette.SUNSET -> LightColorScheme.copy(primary = Color(0xFFD97706))
+    }
+}
 
-/**
- * Extension to get the current shapes.
- */
-val MaterialTheme.shapes: Shapes
-    @Composable
-    @ReadOnlyComposable
-    get() = MaterialTheme.shapes
+object SphereTheme {
+    val colors: SphereColors
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalSphereColors.current
+}

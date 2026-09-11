@@ -1,13 +1,17 @@
 package com.orbits.data.meetings.mappers
 
 import com.orbits.core.common.extensions.nowUtc
-import com.orbits.data.meetings.local.MeetingEntity
+import com.orbits.data.meetings.MeetingEntity
 import com.orbits.data.meetings.remote.MeetingDto
+import com.orbits.data.meetings.remote.ActionItemDto
 import com.orbits.data.meetings.remote.MeetingParticipantDto
 import com.orbits.data.meetings.remote.CreateMeetingRequest
 import com.orbits.data.meetings.remote.UpdateMeetingRequest
 import com.orbits.data.meetings.remote.ZoomMeetingRequest
 import com.orbits.data.meetings.remote.TeamsMeetingRequest
+import com.orbits.data.meetings.remote.TeamsBody
+import com.orbits.data.meetings.remote.TeamsDateTime
+import com.orbits.data.meetings.MeetingParticipantEntity
 import com.orbits.domain.meetings.Meeting
 import com.orbits.domain.meetings.MeetingParticipant
 import com.orbits.domain.meetings.ActionItem
@@ -93,7 +97,7 @@ internal class MeetingMapper @Inject constructor() {
             passcode = dto.passcode,
             agenda = dto.agenda,
             minutes = dto.minutes,
-            actionItems = dto.actionItems?.let { "[]" } ?: null,
+            actionItems = dto.actionItems?.let { "[]" },
             isRecurring = dto.isRecurring,
             recurrencePattern = dto.recurrencePattern,
             status = dto.status,

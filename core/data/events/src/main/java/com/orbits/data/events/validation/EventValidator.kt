@@ -15,7 +15,8 @@ object EventValidator {
             errors.add(ValidationError("name", "Event name must be 255 characters or less"))
         }
 
-        if (event.description != null && event.description.length > 4000) {
+        val description = event.description
+        if (description != null && description.length > 4000) {
             errors.add(ValidationError("description", "Description must be 4000 characters or less"))
         }
 
@@ -31,11 +32,13 @@ object EventValidator {
             errors.add(ValidationError("currency", "Currency cannot be empty"))
         }
 
-        if (event.budget != null && event.budget < 0) {
+        val budget = event.budget
+        if (budget != null && budget < 0) {
             errors.add(ValidationError("budget", "Budget cannot be negative"))
         }
 
-        if (event.maxAttendees != null && event.maxAttendees < 0) {
+        val maxAttendees = event.maxAttendees
+        if (maxAttendees != null && maxAttendees < 0) {
             errors.add(ValidationError("maxAttendees", "Max attendees cannot be negative"))
         }
 

@@ -9,9 +9,9 @@ import com.orbits.core.database.dao.SyncQueueDao
 import com.orbits.core.network.api.ChatApi
 import com.orbits.core.network.error.ApiErrorParser
 import com.orbits.data.sync.SyncQueueEntity
-import com.orbits.data.chat.local.MessageEntity
-import com.orbits.data.chat.local.ConversationEntity
-import com.orbits.data.chat.local.ConversationParticipantEntity
+import com.orbits.data.chat.MessageEntity
+import com.orbits.data.chat.ConversationEntity
+import com.orbits.data.chat.ConversationParticipantEntity
 import com.orbits.data.chat.mappers.MessageMapper
 import com.orbits.data.chat.mappers.ConversationMapper
 import com.orbits.data.chat.mappers.ConversationParticipantMapper
@@ -22,6 +22,7 @@ import com.orbits.domain.chat.Conversation
 import com.orbits.domain.chat.ConversationParticipant
 import com.orbits.domain.chat.ChatRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -83,17 +84,16 @@ internal class ChatRepositoryImpl @Inject constructor(
             // Check if conversation already exists (for direct messages)
             if (type == "direct" && participantIds.size == 1) {
                 // Check for existing conversation
-                val existing = messageDao.getConversationsForUser(getUserId())
-                    .first()
-                    .find { conv ->
-                        conv.type == "direct" &&
-                        // Check if the other participant is in the conversation
-                        messageDao.getConversationParticipants(conv.id)
-                            .any { it.userId == participantIds.first() }
-                    }
+                val userConversations = messageDao.getConversationsForUser(getUserId()).first()
+                val otherParticipantId = participantIds.first()
 
-                if (existing != null) {
-                    return Result.Success(conversationMapper.toDomain(existing))
+                for (conv in userConversations) {
+                    if (conv.type == "direct") {
+                        val participants = messageDao.getConversationParticipants(conv.id)
+                        if (participants.any { it.userId == otherParticipantId }) {
+                            return Result.Success(conversationMapper.toDomain(conv))
+                        }
+                    }
                 }
             }
 
@@ -503,11 +503,9 @@ internal class ChatRepositoryImpl @Inject constructor(
 
             // Pull conversations from server
             val conversationsResponse = chatApi.getConversations()
-            conversationsResponse.data?.let { dtos ->
-                dtos.forEach { dto ->
-                    val entity = conversationMapper.toEntity(dto)
-                    messageDao.insertConversation(entity)
-                }
+            conversationsResponse.items.forEach { dto ->
+                val entity = conversationMapper.toEntity(dto)
+                messageDao.insertConversation(entity)
             }
 
             // Sync unsynced messages

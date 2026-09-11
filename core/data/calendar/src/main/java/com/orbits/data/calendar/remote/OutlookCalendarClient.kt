@@ -1,14 +1,24 @@
+/*
+ * Copyright © 2026 Sphere Solution Developers
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 package com.orbits.data.calendar.remote
 
 import com.orbits.core.common.Result
 import com.orbits.core.common.Logger
-import com.orbits.data.calendar.local.CalendarEventEntity
-import com.microsoft.graph.authentication.BaseAuthenticationProvider
-import com.microsoft.graph.core.ClientFactory
-import com.microsoft.graph.httpcore.HttpClients
+import com.orbits.data.calendar.CalendarEventEntity
+import com.microsoft.graph.authentication.IAuthenticationProvider
 import com.microsoft.graph.requests.GraphServiceClient
 import okhttp3.OkHttpClient
+import java.net.URL
 import java.time.Instant
+import java.util.concurrent.CompletableFuture
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,32 +32,18 @@ internal class OutlookCalendarClient @Inject constructor() {
     /**
      * Creates an Outlook Graph API client with the provided access token.
      */
-    private fun createGraphClient(accessToken: String): GraphServiceClient {
-        val authProvider = object : BaseAuthenticationProvider() {
-            override fun authenticateRequest(
-                request: okhttp3.Request.Builder,
-                credentials: com.microsoft.graph.core.ClientAuthentication
-            ) {
-                request.header("Authorization", "Bearer $accessToken")
+    private fun createGraphClient(accessToken: String): GraphServiceClient<okhttp3.Request> {
+        val authProvider = object : IAuthenticationProvider {
+            override fun getAuthorizationTokenAsync(url: URL): CompletableFuture<String> {
+                val future = CompletableFuture<String>()
+                future.complete(accessToken)
+                return future
             }
         }
 
-        val httpClient = OkHttpClient.Builder()
-            .addInterceptor { chain ->
-                val request = chain.request().newBuilder()
-                    .header("Authorization", "Bearer $accessToken")
-                    .build()
-                chain.proceed(request)
-            }
-            .build()
-
-        val client = ClientFactory.builder()
-            .httpClient(httpClient)
+        return GraphServiceClient.builder()
             .authenticationProvider(authProvider)
-            .build()
-            .get()
-
-        return client as GraphServiceClient
+            .buildClient()
     }
 
     /**
@@ -59,28 +55,25 @@ internal class OutlookCalendarClient @Inject constructor() {
 
             // Build query for events in the next 30 days
             val now = Instant.now()
-            val thirtyDaysAhead = now.plusSeconds(30 * 24 * 60 * 60)
-
+            
             // Using Microsoft Graph API query
             val events = client.me()
                 .calendar()
                 .events()
                 .buildRequest()
                 .select("id,subject,bodyPreview,start,end,location,isOnlineMeeting,onlineMeeting")
-                .filter("start/dateTime ge '${now.toString()}'")
+                .filter("start/dateTime ge '${now}'")
                 .get()
 
-            val mappedEvents = events.currentPage.map { outlookEvent ->
-                // Convert to CalendarEventEntity
-                // Simplified for this example
+            val mappedEvents = events?.currentPage?.map { outlookEvent ->
                 CalendarEventEntity(
-                    id = outlookEvent.id,
+                    id = outlookEvent.id ?: "",
                     userId = "", // Will be set by caller
                     title = outlookEvent.subject ?: "Untitled",
                     description = outlookEvent.bodyPreview,
-                    startDateTime = outlookEvent.start.dateTime?.toString() ?: "",
-                    endDateTime = outlookEvent.end.dateTime?.toString() ?: "",
-                    allDayEvent = outlookEvent.start.date != null,
+                    startDateTime = outlookEvent.start?.dateTime ?: "",
+                    endDateTime = outlookEvent.end?.dateTime ?: "",
+                    allDayEvent = outlookEvent.isAllDay ?: false,
                     location = outlookEvent.location?.displayName,
                     isVirtual = outlookEvent.isOnlineMeeting ?: false,
                     meetingLink = outlookEvent.onlineMeeting?.joinUrl,
@@ -92,7 +85,7 @@ internal class OutlookCalendarClient @Inject constructor() {
                     updatedAt = Instant.now().toString(),
                     syncedAt = Instant.now().toString()
                 )
-            }
+            } ?: emptyList()
 
             Logger.d(TAG, "Synced ${mappedEvents.size} events from Outlook Calendar")
             Result.Success(mappedEvents)
@@ -105,20 +98,21 @@ internal class OutlookCalendarClient @Inject constructor() {
     /**
      * Creates an event in Outlook Calendar.
      */
-    suspend fun createEvent(accessToken: String, entity: CalendarEventEntity): Result<String> {
+    suspend fun createEvent(accessToken: String, entity: CalendarEventEntity): Result<String?> {
         return try {
             val client = createGraphClient(accessToken)
 
-            // Create event request
-            // Simplified — would build a full Event object
+            // Create event request placeholder
+            val event = com.microsoft.graph.models.Event()
+            event.subject = entity.title
+            
             val result = client.me()
-                .calendar()
                 .events()
                 .buildRequest()
-                .post(null)
+                .post(event)
 
             Logger.d(TAG, "Created Outlook Calendar event")
-            Result.Success(result.id)
+            Result.Success(result?.id)
         } catch (e: Exception) {
             Logger.e(TAG, "Error creating Outlook Calendar event", e)
             Result.Error(e)
@@ -131,12 +125,12 @@ internal class OutlookCalendarClient @Inject constructor() {
     suspend fun updateEvent(accessToken: String, externalId: String): Result<Unit> {
         return try {
             val client = createGraphClient(accessToken)
+            val event = com.microsoft.graph.models.Event()
 
             client.me()
-                .calendar()
                 .events(externalId)
                 .buildRequest()
-                .patch(null)
+                .patch(event)
 
             Logger.d(TAG, "Updated Outlook Calendar event: $externalId")
             Result.Success(Unit)

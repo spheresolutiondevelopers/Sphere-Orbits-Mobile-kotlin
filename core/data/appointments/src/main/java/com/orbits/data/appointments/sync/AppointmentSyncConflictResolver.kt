@@ -1,6 +1,6 @@
 package com.orbits.data.appointments.sync
 
-import com.orbits.data.appointments.local.AppointmentEntity
+import com.orbits.data.appointments.AppointmentEntity
 import javax.inject.Inject
 
 internal class AppointmentSyncConflictResolver @Inject constructor() {

@@ -1,0 +1,15 @@
+- `[ ]` Create SyncQueueEntity.kt in :core:database
+- `[ ]` Move AnalyticsEntity to :core:database
+- `[ ]` Move AppointmentEntity to :core:database
+- `[ ]` Move AuthEntity to :core:database
+- `[ ]` Move CalendarEventEntity to :core:database
+- `[ ]` Move Chat entities to :core:database
+- `[ ]` Move Event entities to :core:database
+- `[ ]` Move Meeting entities to :core:database
+- `[ ]` Move NoteEntity to :core:database
+- `[ ]` Move SettingsEntity to :core:database
+- `[ ]` Move Task entities to :core:database
+- `[ ]` Update OrbitsDatabase.kt imports and entities
+- `[ ]` Update :core:database/build.gradle.kts (remove circular deps)
+- `[ ]` Update repositories in :core:data modules
+- `[ ]` Verify build

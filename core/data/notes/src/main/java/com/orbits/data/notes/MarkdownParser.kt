@@ -123,45 +123,60 @@ internal class MarkdownParser @Inject constructor() {
 
         fun getText(): String = textBuilder.toString().trim()
 
-        override fun visit(node: Node) {
-            when (node) {
-                is Text -> textBuilder.append(node.literal)
-                is SoftLineBreak -> textBuilder.append(' ')
-                is Paragraph -> {
-                    super.visit(node)
-                    textBuilder.append('\n')
-                }
-                is Heading -> {
-                    super.visit(node)
-                    textBuilder.append('\n')
-                }
-                is ListBlock -> {
-                    super.visit(node)
-                    textBuilder.append('\n')
-                }
-                is ListItem -> {
-                    textBuilder.append("• ")
-                    super.visit(node)
-                    textBuilder.append('\n')
-                }
-                is StrongEmphasis -> {
-                    textBuilder.append("**")
-                    super.visit(node)
-                    textBuilder.append("**")
-                }
-                is Code -> textBuilder.append('`').append(node.literal).append('`')
-                is FencedCodeBlock -> {
-                    textBuilder.append("```").append(node.info).append('\n')
-                    textBuilder.append(node.literal)
-                    textBuilder.append("\n```\n")
-                }
-                is Link -> {
-                    textBuilder.append('[')
-                    super.visit(node)
-                    textBuilder.append("](").append(node.destination).append(')')
-                }
-                else -> super.visit(node)
-            }
+        override fun visit(text: Text) {
+            textBuilder.append(text.literal)
+        }
+
+        override fun visit(softLineBreak: SoftLineBreak) {
+            textBuilder.append(' ')
+        }
+
+        override fun visit(paragraph: Paragraph) {
+            visitChildren(paragraph)
+            textBuilder.append('\n')
+        }
+
+        override fun visit(heading: Heading) {
+            visitChildren(heading)
+            textBuilder.append('\n')
+        }
+
+        override fun visit(bulletList: org.commonmark.node.BulletList) {
+            visitChildren(bulletList)
+            textBuilder.append('\n')
+        }
+
+        override fun visit(orderedList: org.commonmark.node.OrderedList) {
+            visitChildren(orderedList)
+            textBuilder.append('\n')
+        }
+
+        override fun visit(listItem: ListItem) {
+            textBuilder.append("• ")
+            visitChildren(listItem)
+            textBuilder.append('\n')
+        }
+
+        override fun visit(strongEmphasis: StrongEmphasis) {
+            textBuilder.append("**")
+            visitChildren(strongEmphasis)
+            textBuilder.append("**")
+        }
+
+        override fun visit(code: Code) {
+            textBuilder.append('`').append(code.literal).append('`')
+        }
+
+        override fun visit(fencedCodeBlock: FencedCodeBlock) {
+            textBuilder.append("```").append(fencedCodeBlock.info).append('\n')
+            textBuilder.append(fencedCodeBlock.literal)
+            textBuilder.append("\n```\n")
+        }
+
+        override fun visit(link: Link) {
+            textBuilder.append('[')
+            visitChildren(link)
+            textBuilder.append("](").append(link.destination).append(')')
         }
     }
 

@@ -10,8 +10,8 @@
 
 package com.orbits.data.tasks.mappers
 
-import com.orbits.data.tasks.local.TaskEntity
-import com.orbits.data.tasks.local.SubtaskEntity
+import com.orbits.data.tasks.TaskEntity
+import com.orbits.data.tasks.SubtaskEntity
 import com.orbits.data.tasks.remote.TaskDto
 import com.orbits.data.tasks.remote.SubtaskDto
 import com.orbits.data.tasks.remote.CreateTaskRequest

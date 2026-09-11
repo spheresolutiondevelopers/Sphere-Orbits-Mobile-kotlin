@@ -23,21 +23,25 @@ object ChatValidator {
                 }
             }
             "image", "video" -> {
-                if (message.mediaUrl == null || message.mediaUrl.isBlank()) {
+                val mediaUrl = message.mediaUrl
+                if (mediaUrl == null || mediaUrl.isBlank()) {
                     errors.add(ValidationError("mediaUrl", "Media URL required for image/video messages"))
                 }
             }
             "file" -> {
-                if (message.fileName == null || message.fileName.isBlank()) {
+                val fileName = message.fileName
+                val mediaSize = message.mediaSize
+                if (fileName == null || fileName.isBlank()) {
                     errors.add(ValidationError("fileName", "File name required for file messages"))
                 }
-                if (message.mediaSize != null && message.mediaSize > 100 * 1024 * 1024) {
+                if (mediaSize != null && mediaSize > 100 * 1024 * 1024) {
                     errors.add(ValidationError("mediaSize", "File size cannot exceed 100MB"))
                 }
             }
         }
 
-        if (message.replyToMessageId != null && message.replyToMessageId.isBlank()) {
+        val replyToMessageId = message.replyToMessageId
+        if (replyToMessageId != null && replyToMessageId.isBlank()) {
             errors.add(ValidationError("replyToMessageId", "Invalid reply reference"))
         }
 
@@ -52,15 +56,17 @@ object ChatValidator {
         }
 
         if (conversation.type == "group") {
-            if (conversation.name == null || conversation.name.isBlank()) {
+            val name = conversation.name
+            if (name == null || name.isBlank()) {
                 errors.add(ValidationError("name", "Group conversation must have a name"))
             }
-            if (conversation.name != null && conversation.name.length > 100) {
+            if (name != null && name.length > 100) {
                 errors.add(ValidationError("name", "Conversation name must be 100 characters or less"))
             }
         }
 
-        if (conversation.avatarUrl != null && !conversation.avatarUrl.startsWith("http")) {
+        val avatarUrl = conversation.avatarUrl
+        if (avatarUrl != null && !avatarUrl.startsWith("http")) {
             errors.add(ValidationError("avatarUrl", "Avatar URL must be a valid URL"))
         }
 

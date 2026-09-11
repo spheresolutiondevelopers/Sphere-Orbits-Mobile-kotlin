@@ -1,5 +1,6 @@
 package com.orbits.data.auth.di
 
+import com.orbits.core.common.TokenProvider
 import com.orbits.data.auth.AuthRepositoryImpl
 import com.orbits.data.auth.TokenManager
 import com.orbits.domain.auth.AuthRepository
@@ -19,6 +20,9 @@ internal abstract class DataModule {
         impl: AuthRepositoryImpl
     ): AuthRepository
 
-    // TokenManager is also exposed as TokenProvider via its interface
-    // No need to bind separately, it's already a Singleton
+    @Binds
+    @Singleton
+    abstract fun bindTokenProvider(
+        impl: TokenManager
+    ): TokenProvider
 }

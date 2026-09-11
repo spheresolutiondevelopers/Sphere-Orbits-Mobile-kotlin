@@ -12,6 +12,9 @@ package com.orbits.core.network
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import android.content.Context
+import com.orbits.core.network.BuildConfig
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -28,6 +31,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class ApiClient @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val authInterceptor: AuthInterceptor,
     private val loggingInterceptor: LoggingInterceptor,
     private val networkMonitor: NetworkMonitor
@@ -68,7 +72,8 @@ class ApiClient @Inject constructor(
         builder.build()
     }
 
-    private val retrofit: Retrofit by lazy {
+    @PublishedApi
+    internal val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(okHttpClient)

@@ -1,6 +1,6 @@
 package com.orbits.data.notes.sync
 
-import com.orbits.data.notes.local.NoteEntity
+import com.orbits.data.notes.NoteEntity
 import javax.inject.Inject
 
 internal class NoteSyncConflictResolver @Inject constructor() {

@@ -1,8 +1,8 @@
 package com.orbits.data.appointments.mappers
 
 import com.orbits.core.common.extensions.nowUtc
-import com.orbits.data.appointments.local.AppointmentEntity
-import com.orbits.data.appointments.local.ParticipantEntity
+import com.orbits.data.appointments.AppointmentEntity
+import com.orbits.data.appointments.ParticipantEntity
 import com.orbits.data.appointments.remote.AppointmentDto
 import com.orbits.data.appointments.remote.ParticipantDto
 import com.orbits.data.appointments.remote.CreateAppointmentRequest

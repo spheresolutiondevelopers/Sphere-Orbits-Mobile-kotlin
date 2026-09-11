@@ -19,15 +19,19 @@ import com.orbits.core.database.dao.SyncQueueDao
 import com.orbits.core.network.api.TaskApi
 import com.orbits.core.network.error.ApiErrorParser
 import com.orbits.data.sync.SyncQueueEntity
-import com.orbits.data.tasks.local.TaskEntity
-import com.orbits.data.tasks.local.SubtaskEntity
+import com.orbits.data.tasks.TaskEntity
+import com.orbits.data.tasks.SubtaskEntity
 import com.orbits.data.tasks.mappers.TaskMapper
 import com.orbits.data.tasks.mappers.SubtaskMapper
 import com.orbits.domain.tasks.Task
 import com.orbits.domain.tasks.Subtask
 import com.orbits.domain.tasks.TaskRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -54,10 +58,11 @@ internal class TaskRepositoryImpl @Inject constructor(
 
     // ─── Read Operations ──────────────────────────────────────────
 
-    override fun getTasks(): Flow<List<Task>> {
-        return taskDao.getTasks(getUserId()).map { entities ->
+    override fun getTasks(): Flow<List<Task>> = flow {
+        seedTasksIfEmpty()
+        emitAll(taskDao.getTasks(getUserId()).map { entities ->
             taskMapper.toDomainList(entities)
-        }
+        })
     }
 
     override fun getTasksByStatus(status: String): Flow<List<Task>> {
@@ -313,6 +318,64 @@ internal class TaskRepositoryImpl @Inject constructor(
         // This should come from auth state
         // For production, use a real user ID from AuthManager
         return "test_user_id"
+    }
+
+    private suspend fun seedTasksIfEmpty() {
+        try {
+            val userId = getUserId()
+            if (taskDao.getTaskCount(userId) == 0) {
+                val now = nowUtc()
+                val today = LocalDate.now().toString()
+                val seedTasks = listOf(
+                    Task(
+                        id = UUID.randomUUID().toString(),
+                        userId = userId,
+                        title = "Onboarding",
+                        description = "Welcome to Sphere! Start exploring your task management features.",
+                        taskType = "event",
+                        priorityLevel = "high",
+                        status = "completed",
+                        completionPercentage = 100,
+                        dueDate = today,
+                        createdAt = now,
+                        updatedAt = now,
+                        completedAt = now
+                    ),
+                    Task(
+                        id = UUID.randomUUID().toString(),
+                        userId = userId,
+                        title = "API Integrations",
+                        description = "Connect your favorite services to automate your workflow.",
+                        taskType = "job",
+                        priorityLevel = "medium",
+                        status = "in_progress",
+                        completionPercentage = 45,
+                        dueDate = LocalDate.now().plusDays(2).toString(),
+                        createdAt = now,
+                        updatedAt = now
+                    ),
+                    Task(
+                        id = UUID.randomUUID().toString(),
+                        userId = userId,
+                        title = "Subscriptions",
+                        description = "Manage your team's access and billing details.",
+                        taskType = "personal",
+                        priorityLevel = "low",
+                        status = "pending",
+                        completionPercentage = 0,
+                        dueDate = LocalDate.now().plusDays(7).toString(),
+                        createdAt = now,
+                        updatedAt = now
+                    )
+                )
+                seedTasks.forEach { task ->
+                    taskDao.insertTask(taskMapper.toEntity(task))
+                }
+                Logger.d(TAG, "Seeded tasks for user: $userId")
+            }
+        } catch (e: Exception) {
+            Logger.e(TAG, "Error seeding tasks", e)
+        }
     }
 
     private suspend fun enqueueSync(item: SyncQueueEntity) {

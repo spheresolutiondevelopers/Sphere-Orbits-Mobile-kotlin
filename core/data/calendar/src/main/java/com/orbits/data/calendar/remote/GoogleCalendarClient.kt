@@ -10,7 +10,7 @@ import com.google.auth.oauth2.AccessToken
 import com.google.auth.oauth2.GoogleCredentials
 import com.orbits.core.common.Result
 import com.orbits.core.common.Logger
-import com.orbits.data.calendar.local.CalendarEventEntity
+import com.orbits.data.calendar.CalendarEventEntity
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -198,7 +198,7 @@ internal class GoogleCalendarClient @Inject constructor() {
             val reminders = com.google.api.services.calendar.model.Event.Reminders()
             reminders.useDefault = false
             reminders.overrides = listOf(
-                com.google.api.services.calendar.model.Event.Reminder()
+                com.google.api.services.calendar.model.EventReminder()
                     .setMethod("popup")
                     .setMinutes(entity.reminderMinutesBefore)
             )

@@ -55,7 +55,7 @@ internal class WebSocketClient @Inject constructor() {
         val listener = object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 Logger.d(TAG, "WebSocket connected")
-                this@callbackFlow.webSocket = webSocket
+                this@WebSocketClient.webSocket = webSocket
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
@@ -89,7 +89,7 @@ internal class WebSocketClient @Inject constructor() {
         }
 
         val ws = okHttpClient.newWebSocket(request, listener)
-        this@callbackFlow.webSocket = ws
+        this@WebSocketClient.webSocket = ws
 
         awaitClose {
             Logger.d(TAG, "Closing WebSocket")

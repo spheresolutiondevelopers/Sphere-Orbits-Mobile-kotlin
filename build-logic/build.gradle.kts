@@ -19,10 +19,31 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.kotlin.gradlePlugin)
     implementation(libs.android.gradlePlugin)
+    implementation(libs.kt.gradlePlugin)
+    implementation(libs.kt.serializationPlugin)
+    implementation(libs.kt.composePlugin)
     implementation(libs.hilt.gradlePlugin)
+    implementation("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:2.3.11")
 }
 
-// This is required to make the convention plugins available
-// to the root project without the 'buildSrc' issues.
+gradlePlugin {
+    plugins {
+        register("androidApplication") {
+            id = "sphere.android.application"
+            implementationClass = "AndroidApplicationConvention"
+        }
+        register("androidLibrary") {
+            id = "sphere.android.library"
+            implementationClass = "AndroidLibraryConvention"
+        }
+        register("androidFeature") {
+            id = "sphere.android.feature"
+            implementationClass = "AndroidFeatureConvention"
+        }
+        register("hilt") {
+            id = "sphere.android.hilt"
+            implementationClass = "HiltConvention"
+        }
+    }
+}

@@ -2,8 +2,8 @@ package com.orbits.data.auth.mappers
 
 import com.orbits.core.common.extensions.nowUtc
 import com.orbits.core.model.UserDto
-import com.orbits.data.auth.local.AuthEntity
-import com.orbits.data.auth.local.TokenEntity
+import com.orbits.data.auth.AuthEntity
+import com.orbits.data.auth.TokenEntity
 import com.orbits.domain.auth.AuthUser
 import com.orbits.domain.auth.AuthTokens
 import javax.inject.Inject
@@ -23,6 +23,7 @@ internal class AuthMapper @Inject constructor() {
             phoneNumber = dto.phoneNumber,
             avatarUrl = dto.avatarUrl,
             accountType = dto.accountType.name,
+            isLocal = false,
             isActive = dto.isActive,
             createdAt = dto.createdAt,
             updatedAt = dto.updatedAt
@@ -42,6 +43,7 @@ internal class AuthMapper @Inject constructor() {
             phoneNumber = entity.phoneNumber,
             avatarUrl = entity.avatarUrl,
             accountType = entity.accountType,
+            isLocal = entity.isLocal,
             isActive = entity.isActive,
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt,
@@ -60,6 +62,7 @@ internal class AuthMapper @Inject constructor() {
             phoneNumber = domain.phoneNumber,
             avatarUrl = domain.avatarUrl,
             accountType = domain.accountType,
+            isLocal = domain.isLocal,
             isActive = domain.isActive,
             createdAt = domain.createdAt,
             updatedAt = domain.updatedAt,
@@ -106,6 +109,7 @@ internal class AuthMapper @Inject constructor() {
             phoneNumber = user.phoneNumber,
             avatarUrl = user.avatarUrl,
             accountType = user.accountType.name,
+            isLocal = false,
             isActive = user.isActive,
             createdAt = user.createdAt,
             updatedAt = user.updatedAt,

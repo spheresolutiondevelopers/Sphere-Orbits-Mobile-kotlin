@@ -14,7 +14,7 @@ import com.orbits.core.database.dao.SyncQueueDao
 import com.orbits.core.network.api.SettingsApi
 import com.orbits.core.network.error.ApiErrorParser
 import com.orbits.data.sync.SyncQueueEntity
-import com.orbits.data.settings.local.SettingsEntity
+import com.orbits.data.settings.SettingsEntity
 import com.orbits.data.settings.mappers.SettingsMapper
 import com.orbits.domain.settings.Settings
 import com.orbits.domain.settings.SettingsRepository
@@ -28,7 +28,7 @@ private val Context.dataStore by preferencesDataStore("sphere_settings")
 
 @Singleton
 internal class SettingsRepositoryImpl @Inject constructor(
-    private val context: Context,
+    @dagger.hilt.android.qualifiers.ApplicationContext private val context: Context,
     private val settingsDao: SettingsDao,
     private val syncQueueDao: SyncQueueDao,
     private val settingsApi: SettingsApi,
@@ -481,8 +481,9 @@ internal class SettingsRepositoryImpl @Inject constructor(
         require(settings.defaultAppointmentDuration in 15..480) {
             "Default appointment duration must be between 15 and 480 minutes"
         }
-        if (settings.accentColor != null) {
-            require(settings.accentColor.matches(Regex("^#[0-9A-Fa-f]{6}$"))) {
+        val accentColor = settings.accentColor
+        if (accentColor != null) {
+            require(accentColor.matches(Regex("^#[0-9A-Fa-f]{6}$"))) {
                 "Invalid accent color format. Must be #RRGGBB"
             }
         }

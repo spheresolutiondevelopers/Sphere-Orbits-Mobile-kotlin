@@ -1,7 +1,7 @@
 package com.orbits.data.chat.sync
 
-import com.orbits.data.chat.local.MessageEntity
-import com.orbits.data.chat.local.ConversationEntity
+import com.orbits.data.chat.MessageEntity
+import com.orbits.data.chat.ConversationEntity
 import javax.inject.Inject
 
 internal class ChatSyncConflictResolver @Inject constructor() {

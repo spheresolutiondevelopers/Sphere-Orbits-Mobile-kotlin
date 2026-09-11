@@ -58,8 +58,9 @@ object SettingsValidator {
         }
 
         // Accent Color
-        if (settings.accentColor != null) {
-            if (!settings.accentColor.matches(Regex("^#[0-9A-Fa-f]{6}$"))) {
+        val accentColor = settings.accentColor
+        if (accentColor != null) {
+            if (!accentColor.matches(Regex("^#[0-9A-Fa-f]{6}$"))) {
                 errors.add(ValidationError("accentColor", "Invalid accent color format. Must be #RRGGBB"))
             }
         }

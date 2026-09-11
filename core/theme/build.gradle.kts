@@ -10,31 +10,32 @@
 
 plugins {
     id("sphere.android.library")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
     namespace = "com.orbits.core.theme"
+
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
     // Compose — required for MaterialTheme
     implementation(platform(libs.compose.bom))
-    implementation(libs.compose.ui)
-    implementation(libs.compose.ui.graphics)
-    implementation(libs.compose.ui.tooling.preview)
-    implementation(libs.compose.material3)
-    implementation(libs.compose.material.icons)
+    implementation(libs.bundles.compose)
 
     // DataStore — for theme preference persistence
     implementation(libs.datastore.preferences)
     implementation(libs.datastore.core)
 
     // Kotlin coroutines
-    implementation(libs.kotlin.coroutines)
+    implementation(libs.kt.coroutines)
 
     // Testing
     testImplementation(libs.junit)
-    testImplementation(libs.kotlin.coroutines.test)
+    testImplementation(libs.kt.coroutines.test)
 }
 
 // Compose compiler plugin is applied via the library convention plugin

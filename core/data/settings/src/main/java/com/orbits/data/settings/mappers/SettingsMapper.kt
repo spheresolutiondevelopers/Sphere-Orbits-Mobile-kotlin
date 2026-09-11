@@ -1,7 +1,7 @@
 package com.orbits.data.settings.mappers
 
 import com.orbits.core.common.extensions.nowUtc
-import com.orbits.data.settings.local.SettingsEntity
+import com.orbits.data.settings.SettingsEntity
 import com.orbits.data.settings.remote.SettingsDto
 import com.orbits.data.settings.remote.UpdateSettingsRequest
 import com.orbits.domain.settings.Settings

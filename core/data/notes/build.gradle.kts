@@ -7,12 +7,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.kotlin.coroutines)
-    implementation(libs.kotlin.serialization)
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-
     // Internal modules
     implementation(project(":core:common"))
     implementation(project(":core:model"))
@@ -24,10 +18,4 @@ dependencies {
     implementation("org.commonmark:commonmark:0.21.0")
     implementation("org.commonmark:commonmark-ext-gfm-tables:0.21.0")
     implementation("org.commonmark:commonmark-ext-gfm-strikethrough:0.21.0")
-
-    // Testing
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlin.coroutines.test)
-    testImplementation(libs.mockito.core)
-    testImplementation(libs.mockito.kotlin)
 }

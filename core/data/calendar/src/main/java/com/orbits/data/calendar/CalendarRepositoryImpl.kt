@@ -1,6 +1,7 @@
 package com.orbits.data.calendar
 
 import com.orbits.core.common.Result
+import com.orbits.core.common.onSuccess
 import com.orbits.core.common.Logger
 import com.orbits.core.common.TokenProvider
 import com.orbits.core.common.extensions.nowUtc
@@ -8,7 +9,7 @@ import com.orbits.core.database.dao.CalendarEventDao
 import com.orbits.core.database.dao.SyncQueueDao
 import com.orbits.core.network.api.CalendarApi
 import com.orbits.core.network.error.ApiErrorParser
-import com.orbits.data.calendar.local.CalendarEventEntity
+import com.orbits.data.calendar.CalendarEventEntity
 import com.orbits.data.calendar.mappers.CalendarEventMapper
 import com.orbits.data.calendar.remote.GoogleCalendarClient
 import com.orbits.data.calendar.remote.OutlookCalendarClient
@@ -139,12 +140,11 @@ internal class CalendarRepositoryImpl @Inject constructor(
             val result = googleCalendarClient.syncEvents(accessToken)
             result.onSuccess { events ->
                 // Update local database with Google events
-                events.forEach { event ->
+                for (event in events) {
                     val existing = calendarEventDao.getEventByExternalId(getUserId(), event.externalEventId ?: "")
                     if (existing != null) {
                         // Update existing
-                        val updated = event.copy(
-                            userId = getUserId(),
+                        val updated = existing.copy(
                             updatedAt = nowUtc()
                         )
                         calendarEventDao.updateEvent(updated)

@@ -14,6 +14,7 @@ import com.orbits.core.network.ApiClient
 import com.orbits.core.network.AuthInterceptor
 import com.orbits.core.network.LoggingInterceptor
 import com.orbits.core.network.NetworkMonitor
+import com.orbits.core.network.api.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,7 +42,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideNetworkMonitor(
-        context: android.content.Context
+        @dagger.hilt.android.qualifiers.ApplicationContext context: android.content.Context
     ): NetworkMonitor {
         return NetworkMonitor(context)
     }
@@ -49,11 +50,23 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideApiClient(
+        @dagger.hilt.android.qualifiers.ApplicationContext context: android.content.Context,
         authInterceptor: AuthInterceptor,
         loggingInterceptor: LoggingInterceptor,
         networkMonitor: NetworkMonitor
     ): ApiClient {
-        return ApiClient(authInterceptor, loggingInterceptor, networkMonitor)
+        return ApiClient(context, authInterceptor, loggingInterceptor, networkMonitor)
+    }
+
+    @Provides
+    @Singleton
+    fun provideJson(): kotlinx.serialization.json.Json {
+        return kotlinx.serialization.json.Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+            encodeDefaults = true
+            prettyPrint = true
+        }
     }
 
     // ─── API Services ────────────────────────────────────────────

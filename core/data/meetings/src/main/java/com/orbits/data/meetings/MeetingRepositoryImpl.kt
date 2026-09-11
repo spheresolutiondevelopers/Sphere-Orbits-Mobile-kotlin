@@ -1,6 +1,8 @@
 package com.orbits.data.meetings
 
 import com.orbits.core.common.Result
+import com.orbits.core.common.onSuccess
+import com.orbits.core.common.onError
 import com.orbits.core.common.Logger
 import com.orbits.core.common.TokenProvider
 import com.orbits.core.common.extensions.nowUtc
@@ -10,8 +12,8 @@ import com.orbits.core.database.dao.TaskDao
 import com.orbits.core.network.api.MeetingApi
 import com.orbits.core.network.error.ApiErrorParser
 import com.orbits.data.sync.SyncQueueEntity
-import com.orbits.data.meetings.local.MeetingEntity
-import com.orbits.data.meetings.local.MeetingParticipantEntity
+import com.orbits.data.meetings.MeetingEntity
+import com.orbits.data.meetings.MeetingParticipantEntity
 import com.orbits.data.meetings.mappers.MeetingMapper
 import com.orbits.data.meetings.mappers.MeetingParticipantMapper
 import com.orbits.data.meetings.remote.ZoomClient
@@ -372,7 +374,8 @@ internal class MeetingRepositoryImpl @Inject constructor(
             }
 
             val existing = meetingDao.getMeeting(meeting.id)
-            if (existing == null || existing.meetingId == null) {
+            val platformMeetingId = existing?.meetingId
+            if (existing == null || platformMeetingId == null) {
                 Logger.w(TAG, "No platform meeting ID found for update")
                 return
             }
@@ -380,11 +383,11 @@ internal class MeetingRepositoryImpl @Inject constructor(
             when (meeting.meetingPlatform?.lowercase()) {
                 "zoom" -> {
                     val zoomRequest = meetingMapper.toZoomRequest(meeting)
-                    zoomClient.updateMeeting(token, existing.meetingId, zoomRequest)
+                    zoomClient.updateMeeting(token, platformMeetingId, zoomRequest)
                 }
                 "teams", "microsoft_teams" -> {
                     val teamsRequest = meetingMapper.toTeamsRequest(meeting)
-                    teamsClient.updateMeeting(token, existing.meetingId, teamsRequest)
+                    teamsClient.updateMeeting(token, platformMeetingId, teamsRequest)
                 }
                 else -> {
                     Logger.d(TAG, "Unknown meeting platform: ${meeting.meetingPlatform}")
@@ -398,17 +401,18 @@ internal class MeetingRepositoryImpl @Inject constructor(
     private suspend fun deletePlatformMeeting(meeting: MeetingEntity) {
         try {
             val token = tokenProvider.getAccessToken()
-            if (token == null || meeting.meetingId == null) {
+            val meetingId = meeting.meetingId
+            if (token == null || meetingId == null) {
                 Logger.w(TAG, "Cannot delete platform meeting: No token or meeting ID")
                 return
             }
 
             when (meeting.meetingPlatform?.lowercase()) {
                 "zoom" -> {
-                    zoomClient.deleteMeeting(token, meeting.meetingId)
+                    zoomClient.deleteMeeting(token, meetingId)
                 }
                 "teams", "microsoft_teams" -> {
-                    teamsClient.deleteMeeting(token, meeting.meetingId)
+                    teamsClient.deleteMeeting(token, meetingId)
                 }
                 else -> {
                     Logger.d(TAG, "Unknown meeting platform: ${meeting.meetingPlatform}")

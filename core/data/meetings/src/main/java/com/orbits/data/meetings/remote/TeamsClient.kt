@@ -46,7 +46,7 @@ internal class TeamsClient @Inject constructor() {
                 .build()
 
             val response = httpClient.newCall(httpRequest).execute()
-            val responseBody = response.body?.string()
+            val responseBody = response.body.string()
 
             if (response.isSuccessful && responseBody != null) {
                 val teamsResponse = json.decodeFromString(TeamsMeetingResponse.serializer(), responseBody)

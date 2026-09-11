@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.orbits.core.common.TokenProvider
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,7 +16,7 @@ private val Context.dataStore by preferencesDataStore("auth_tokens")
 
 @Singleton
 internal class TokenManager @Inject constructor(
-    private val context: Context
+    @dagger.hilt.android.qualifiers.ApplicationContext private val context: Context
 ) : TokenProvider {
 
     companion object {
@@ -29,13 +30,13 @@ internal class TokenManager @Inject constructor(
     override suspend fun getAccessToken(): String? {
         return context.dataStore.data
             .map { preferences -> preferences[ACCESS_TOKEN_KEY] }
-            .collect { return it }
+            .firstOrNull()
     }
 
     override suspend fun getRefreshToken(): String? {
         return context.dataStore.data
             .map { preferences -> preferences[REFRESH_TOKEN_KEY] }
-            .collect { return it }
+            .firstOrNull()
     }
 
     override suspend fun clearTokens() {
@@ -76,7 +77,7 @@ internal class TokenManager @Inject constructor(
     suspend fun isTokenExpired(): Boolean {
         val expiresAt = context.dataStore.data
             .map { preferences -> preferences[EXPIRES_AT_KEY] }
-            .collect { return it }
+            .firstOrNull()
         if (expiresAt == null) return true
         return try {
             java.time.Instant.parse(expiresAt).isBefore(java.time.Instant.now())

@@ -7,6 +7,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.orbits.core.common.Result
+import com.orbits.domain.auth.AuthUser
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,7 +16,7 @@ import kotlin.coroutines.resumeWithException
 
 @Singleton
 internal class OAuthClient @Inject constructor(
-    private val context: Context
+    @dagger.hilt.android.qualifiers.ApplicationContext private val context: Context
 ) {
 
     private val googleSignInClient: GoogleSignInClient by lazy {

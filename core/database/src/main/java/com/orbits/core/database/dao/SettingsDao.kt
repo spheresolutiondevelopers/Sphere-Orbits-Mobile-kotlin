@@ -54,13 +54,6 @@ interface SettingsDao {
     """)
     suspend fun updateTimezone(userId: String, timezone: String)
 
-    @Query("""
-        UPDATE settings 
-        SET notification_preferences = :preferences, updated_at = datetime('now') 
-        WHERE user_id = :userId
-    """)
-    suspend fun updateNotificationPreferences(userId: String, preferences: String)
-
     @Query("DELETE FROM settings WHERE user_id = :userId")
     suspend fun deleteSettings(userId: String)
 }

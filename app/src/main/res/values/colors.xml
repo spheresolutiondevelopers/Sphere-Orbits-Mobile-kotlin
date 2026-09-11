@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ─── Splash Screen ───────────────────────────────────────── -->
+    <color name="splash_background">#0D0C14</color>
+    <color name="splash_icon_tint">#7C6CF8</color>
+
+    <!-- ─── Theme Colors ────────────────────────────────────────── -->
+    <color name="purple_500">#7C6CF8</color>
+    <color name="purple_700">#5E4FF0</color>
+    <color name="teal_200">#2DD4A0</color>
+    <color name="teal_700">#059669</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

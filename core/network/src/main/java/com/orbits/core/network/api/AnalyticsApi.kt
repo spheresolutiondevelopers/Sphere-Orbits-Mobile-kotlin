@@ -10,41 +10,11 @@
 
 package com.orbits.core.network.api
 
+import com.orbits.core.model.*
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
-
-@kotlinx.serialization.Serializable
-data class ProductivityStats(
-    val tasksCompleted: Int,
-    val tasksCreated: Int,
-    val tasksOverdue: Int,
-    val meetingsAttended: Int,
-    val totalFocusHours: Double,
-    val productivityScore: Int,
-    val completionRate: Double,
-    val trend: String // "up", "down", "stable"
-)
-
-@kotlinx.serialization.Serializable
-data class TaskCompletionTrend(
-    val labels: List<String>, // dates
-    val completed: List<Int>,
-    val created: List<Int>
-)
-
-@kotlinx.serialization.Serializable
-data class CategoryBreakdown(
-    val category: String,
-    val count: Int,
-    val percentage: Double
-)
-
-@kotlinx.serialization.Serializable
-data class ReportRequest(
-    val startDate: String,
-    val endDate: String,
-    val type: String // "daily", "weekly", "monthly"
-)
 
 interface AnalyticsApi {
 
@@ -52,22 +22,22 @@ interface AnalyticsApi {
     suspend fun getProductivityStats(
         @Query("startDate") startDate: String,
         @Query("endDate") endDate: String
-    ): ProductivityStats
+    ): ProductivityStatsDto
 
     @GET("api/v1/analytics/trend")
     suspend fun getTaskCompletionTrend(
         @Query("startDate") startDate: String,
         @Query("endDate") endDate: String
-    ): TaskCompletionTrend
+    ): TaskCompletionTrendDto
 
     @GET("api/v1/analytics/categories")
     suspend fun getCategoryBreakdown(
         @Query("startDate") startDate: String,
         @Query("endDate") endDate: String
-    ): List<CategoryBreakdown>
+    ): List<CategoryBreakdownDto>
 
     @POST("api/v1/analytics/report")
     suspend fun generateReport(
-        @Body request: ReportRequest
+        @Body request: AnalyticsReportRequest
     ): String // URL to generated report
 }

@@ -15,7 +15,7 @@ data class RecurrenceRule(
     val byWeekNo: List<Int>? = null,
     val byYearDay: List<Int>? = null,
     val bySetPos: List<Int>? = null,
-    val weekStart: Weekday = Weekday.MONDAY
+    val weekStart: Weekday = Weekday.MO
 ) {
 
     enum class Frequency {
@@ -58,7 +58,7 @@ data class RecurrenceRule(
             parts.add("BYMONTH=${months.joinToString(",")}")
         }
 
-        if (weekStart != Weekday.MONDAY) {
+        if (weekStart != Weekday.MO) {
             parts.add("WKST=$weekStart")
         }
 
@@ -75,7 +75,7 @@ data class RecurrenceRule(
             return try {
                 val parts = rrule.split(";").associate {
                     val keyValue = it.split("=")
-                    keyValue[0] to keyValue.getOrNull(1) ?: ""
+                    keyValue[0] to (keyValue.getOrNull(1) ?: "")
                 }
 
                 val frequency = parts["FREQ"]?.let {
@@ -100,7 +100,7 @@ data class RecurrenceRule(
 
                 val weekStart = parts["WKST"]?.let {
                     Weekday.fromString(it)
-                } ?: Weekday.MONDAY
+                } ?: Weekday.MO
 
                 RecurrenceRule(
                     frequency = frequency,
